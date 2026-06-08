@@ -358,12 +358,26 @@ textarea{resize:none;min-height:80px}
       <div class="section-title">📊 Holat</div>
       <div class="status-grid" id="status-grid">
         <button class="status-btn" data-status="Soz">✅ Soz</button>
-        <button class="status-btn" data-status="Nosoz">❌ Nosoz</button>
-        <button class="status-btn" data-status="Krivaship">🔧 Krivaship</button>
-        <button class="status-btn" data-status="Nijniy golovka">🔩 Nijniy golovka</button>
-        <button class="status-btn" data-status="Palts">⚙️ Palts</button>
-        <button class="status-btn" data-status="Peramida">🏗️ Peramida</button>
-        <button class="status-btn" data-status="Balansir">⚖️ Balansir</button>
+        <button class="status-btn" data-status="Nosoz" id="nosoz-main-btn" onclick="toggleNosozMenu()">❌ Nosoz</button>
+      </div>
+      <!-- Nosoz sabablari -->
+      <div id="nosoz-menu" style="display:none;margin-top:10px">
+        <div style="font-size:.78rem;color:var(--text2);margin-bottom:8px;text-align:center">Nosozlik sababini tanlang:</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="status-btn nosoz-reason" data-status="Nosoz — Sal'nik almashtirilishi kerak">🔧 Sal'nik almashtirilishi kerak</button>
+          <button class="status-btn nosoz-reason" data-status="Nosoz — Remen' uzilgan yoki yaroqsiz">⚡ Remen' uzilgan yoki yaroqsiz</button>
+          <button class="status-btn nosoz-reason" data-status="Nosoz — Nijniy golovka/palts/podshipnikdan ovoz yoki stujka">🔩 Nijniy golovka/palts/podshipnikdan ovoz yoki stujka</button>
+          <button class="status-btn nosoz-reason" data-status="Nosoz — Elektrodvigatilda shovqin">⚙️ Elektrodvigatilda shovqin</button>
+          <button class="status-btn nosoz-reason" data-status="Nosoz — Kanat uzilgan yoki stakanidan sidirilgan">🪢 Kanat uzilgan yoki stakanidan sidirilgan</button>
+          <button class="status-btn nosoz-reason" data-status="Nosoz — Rama singan yoki yorilgan">🏗️ Rama singan yoki yorilgan</button>
+          <button class="status-btn nosoz-reason" data-status="Nosoz — Elektroschit zashchitniki nosoz">⚡ Elektroschit zashchitniki nosoz</button>
+          <button class="status-btn nosoz-reason" data-status="Nosoz — Krivashp shponkasi chiqib ketgan">🔑 Krivaship shponkasi chiqib ketgan</button>
+          <button class="status-btn nosoz-reason" data-status="Nosoz — Val shesternyalari yeyilib ketgan">⚙️ Val shesternyalari yeyilib ketgan</button>
+          <button class="status-btn nosoz-reason" data-status="Nosoz — Mаhovik shponkasi chiqib ketgan">🔑 Mahovik shponkasi chiqib ketgan</button>
+          <button class="status-btn nosoz-reason" data-status="Nosoz — Reduktorda qattiq tovush bor">🔊 Reduktorda qattiq tovush bor</button>
+          <button class="status-btn nosoz-reason" data-status="Nosoz — Travers uzilgan">💥 Travers uzilgan</button>
+          <button class="status-btn nosoz-reason" data-status="Nosoz — Quduqda suyuqlik kelishi to'xtagan">💧 Quduqda suyuqlik kelishi to'xtagan</button>
+        </div>
       </div>
     </div>
     <div class="section-card">
@@ -412,7 +426,16 @@ textarea{resize:none;min-height:80px}
       <div class="form-group"><label>Tavsif</label><textarea id="em-desc" placeholder="Avariya haqida yozing..."></textarea></div>
       <button class="btn-primary" id="em-send-btn" style="background:linear-gradient(135deg,var(--danger),#b91c1c)">🚨 YUBORISH</button>
     </div>
-    <div id="emergency-list"></div>
+    <!-- Aktiv avariyalar -->
+    <div class="section-card" style="margin-top:12px">
+      <div class="section-title" style="color:var(--red)">🔴 Aktiv avariyalar</div>
+      <div id="emergency-list"></div>
+    </div>
+    <!-- Bartaraf etilgan avariyalar -->
+    <div class="section-card" style="margin-top:12px">
+      <div class="section-title" style="color:var(--green)">✅ Bartaraf etildi</div>
+      <div id="resolved-list"><div class="empty-state">Yuklanmoqda...</div></div>
+    </div>
   </div>
 
   <div class="page" id="page-settings">
@@ -436,6 +459,20 @@ textarea{resize:none;min-height:80px}
         <div class="section-title">📷 Quduq QR kodlari</div>
         <div style="font-size:.8rem;color:var(--text2);margin-bottom:12px">Har bir quduq yoniga osish uchun QR kodlar. Bosingiz va yuklab oling.</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px" id="qr-codes-grid"></div>
+      </div>
+    </div>
+    <!-- Fon rangi -->
+    <div class="section-card" style="margin-bottom:16px">
+      <div class="section-title">🎨 Fon rangi</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px" id="theme-grid">
+        <div class="theme-dot" data-bg="#0a0f1e" data-bg2="#0f1628" data-bg3="#151d35" data-card="#111827" style="background:#0a0f1e;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid var(--accent);margin:auto"></div>
+        <div class="theme-dot" data-bg="#0d1b2a" data-bg2="#1b263b" data-bg3="#1b2838" data-card="#162032" style="background:#0d1b2a;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
+        <div class="theme-dot" data-bg="#0f2017" data-bg2="#122a1c" data-bg3="#163322" data-card="#0f2017" style="background:#0f2017;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
+        <div class="theme-dot" data-bg="#1a0a2e" data-bg2="#2a1047" data-bg3="#220d3b" data-card="#1a0a2e" style="background:#1a0a2e;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
+        <div class="theme-dot" data-bg="#1a0a0a" data-bg2="#2a1010" data-bg3="#221010" data-card="#1a0a0a" style="background:#1a0a0a;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
+        <div class="theme-dot" data-bg="#111111" data-bg2="#1a1a1a" data-bg3="#222222" data-card="#141414" style="background:#111111;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
+        <div class="theme-dot" data-bg="#0a1628" data-bg2="#0f1e36" data-bg3="#132440" data-card="#0d1b30" style="background:#0a1628;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
+        <div class="theme-dot" data-bg="#1c1408" data-bg2="#2a1e0a" data-bg3="#33260d" data-card="#1c1408" style="background:#1c1408;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
       </div>
     </div>
     <div class="settings-section">
@@ -897,7 +934,10 @@ function openWell(w) {
   document.getElementById('well-timer').className = 'timer-display';
   document.getElementById('timer-label').textContent = 'QR skanerlanishini kuting';
   document.getElementById('warn-banner').className = 'warn-banner';
-  document.querySelectorAll('.status-btn').forEach(b => b.className = 'status-btn');
+  document.querySelectorAll('.status-btn').forEach(b => {
+    b.className = 'status-btn' + (b.classList.contains('nosoz-reason') ? ' nosoz-reason' : '');
+  });
+  document.getElementById('nosoz-menu').style.display = 'none';
 
   // Kirish kartasi aktiv, chiqish kartasi o'chiq
   const enterCard = document.getElementById('qr-enter-card');
@@ -1080,11 +1120,28 @@ document.getElementById('qr-exit-card').addEventListener('click', () => {
   startQRScan('exit');
 });
 
+function toggleNosozMenu() {
+  const menu = document.getElementById('nosoz-menu');
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
 document.querySelectorAll('.status-btn').forEach(btn => {
   btn.addEventListener('click', () => {
+    if (btn.id === 'nosoz-main-btn') return; // handled by toggleNosozMenu
     selectedStatus = btn.dataset.status;
-    document.querySelectorAll('.status-btn').forEach(b => b.className = 'status-btn');
-    btn.className = 'status-btn ' + (selectedStatus === 'Soz' ? 'sel-soz' : 'sel-nosoz');
+    document.querySelectorAll('.status-btn').forEach(b => {
+      b.className = 'status-btn' + (b.classList.contains('nosoz-reason') ? ' nosoz-reason' : '');
+    });
+    const isSoz = selectedStatus === 'Soz';
+    btn.className = (btn.classList.contains('nosoz-reason') ? 'status-btn nosoz-reason ' : 'status-btn ') + (isSoz ? 'sel-soz' : 'sel-nosoz');
+    if (!isSoz) {
+      // nosoz tanlanganda nosoz-main-btn ham belgilansin
+      const mainBtn = document.getElementById('nosoz-main-btn');
+      if (mainBtn) mainBtn.className = 'status-btn sel-nosoz';
+    }
+    if (btn.classList.contains('nosoz-reason')) {
+      showToast('✅ ' + selectedStatus.replace('Nosoz — ',''), 'success');
+    }
   });
 });
 
@@ -1197,7 +1254,8 @@ async function loadHistory() {
     el.innerHTML = snap.docs.slice(0,50).map(d => {
       const data = d.data();
       const t = data.vaqt?.toDate();
-      return '<div class="section-card" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-family:Rajdhani,sans-serif;font-size:1.1rem;font-weight:700;color:var(--accent)">'+data.quduq+' quduq</div><div class="h-status '+(data.holat==='Soz'?'soz':'nosoz')+'">'+data.holat+'</div></div><div style="font-size:.8rem;color:var(--text2)">🕐 '+(t?t.toLocaleString('uz-UZ'):'--')+' | ⏱ '+fmtDur(data.davomiylik||0)+'</div>'+(data.izoh?'<div style="font-size:.82rem;color:var(--text);margin-top:6px">💬 '+data.izoh+'</div>':'')+(data.rasmlar?.length?'<div style="display:flex;gap:6px;margin-top:8px">'+data.rasmlar.map(r=>'<img src="'+r+'" style="width:50px;height:50px;border-radius:6px;object-fit:cover">').join('')+'</div>':'')+'</div>';
+      const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
+      return '<div class="section-card" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-family:Rajdhani,sans-serif;font-size:1.1rem;font-weight:700;color:var(--accent)">'+data.quduq+' quduq</div><div style="display:flex;align-items:center;gap:6px"><div class="h-status '+(data.holat==='Soz'?'soz':'nosoz')+'">'+data.holat+'</div>'+(isAdmin?'<button onclick="deleteRecord(\''+d.id+'\')" style="background:rgba(239,68,68,.15);border:1px solid var(--red);color:var(--red);border-radius:6px;padding:3px 8px;font-size:.72rem;cursor:pointer">🗑️</button>':'')+'</div></div><div style="font-size:.8rem;color:var(--text2)">🕐 '+(t?t.toLocaleString('uz-UZ'):'--')+' | ⏱ '+fmtDur(data.davomiylik||0)+'</div>'+(data.izoh?'<div style="font-size:.82rem;color:var(--text);margin-top:6px">💬 '+data.izoh+'</div>':'')+(data.rasmlar?.length?'<div style="display:flex;gap:6px;margin-top:8px">'+data.rasmlar.map(r=>'<img src="'+r+'" style="width:50px;height:50px;border-radius:6px;object-fit:cover">').join('')+'</div>':'')+'</div>';
     }).join('');
   } catch(e) { el.innerHTML = '<div class="empty-state">Xatolik: '+e.message+'</div>'; }
 }
@@ -1206,25 +1264,48 @@ async function loadHistory() {
 function listenEmergencies() {
   db.collection('avariyalar').orderBy('vaqt','desc').onSnapshot(snap => {
     const activeDocs = snap.docs.filter(d => d.data().active === true);
+    const resolvedDocs = snap.docs.filter(d => d.data().active !== true);
     if (activeDocs.length > 0) document.querySelector('[data-page="emergency"]').classList.add('has-alert');
     else document.querySelector('[data-page="emergency"]').classList.remove('has-alert');
+
+    // Aktiv ro'yxat
     const el = document.getElementById('emergency-list');
-    const allDocs = snap.docs;
-    if (!allDocs.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">✅</div>Avariya yo\'q</div>'; return; }
-    el.innerHTML = allDocs.map(d => {
-      const data = d.data();
-      const t = data.vaqt?.toDate();
-      const isActive = data.active === true;
-      const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
-      return '<div class="em-item" style="'+(isActive?'':'opacity:.5;border-color:var(--border)')+'"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="em-well">'+(isActive?'🚨':'✅')+' '+data.quduq+' quduq'+(isActive?'':' <span style="font-size:.7rem;color:var(--green);font-weight:400">(Hal qilindi)</span>')+'</div><div class="em-desc">'+data.tavsif+'</div><div class="em-operator">👤 '+data.operator_nomi+'</div><div class="em-time">'+(t?t.toLocaleString('uz-UZ'):'--')+'</div></div>'+(isAdmin&&isActive?'<button onclick="resolveEmergency(\''+d.id+'\')" style="background:var(--green);color:#000;border:none;border-radius:8px;padding:6px 10px;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap;margin-left:8px">✅ Hal<br>qilindi</button>':'')+'</div></div>';
-    }).join('');
+    if (!activeDocs.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">✅</div>Aktiv avariya yo\'q</div>'; }
+    else {
+      el.innerHTML = activeDocs.map(d => {
+        const data = d.data();
+        const t = data.vaqt?.toDate();
+        const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
+        return '<div class="em-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="em-well">🚨 '+data.quduq+' quduq</div><div class="em-desc">'+data.tavsif+'</div><div class="em-operator">👤 '+data.operator_nomi+'</div><div class="em-time">'+(t?t.toLocaleString('uz-UZ'):'--')+'</div></div>'+(isAdmin?'<button onclick="resolveEmergency(\''+d.id+'\')" style="background:var(--green);color:#000;border:none;border-radius:8px;padding:6px 10px;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap;margin-left:8px">✅ Hal<br>qilindi</button>':'')+'</div></div>';
+      }).join('');
+    }
+
+    // Bartaraf etilgan ro'yxat
+    const rel = document.getElementById('resolved-list');
+    if (!resolvedDocs.length) { rel.innerHTML = '<div class="empty-state">Hali yo\'q</div>'; }
+    else {
+      rel.innerHTML = resolvedDocs.slice(0,10).map(d => {
+        const data = d.data();
+        const t = data.vaqt?.toDate();
+        const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
+        return '<div class="em-item" style="opacity:.7;border-color:var(--green)"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="em-well" style="color:var(--green)">✅ '+data.quduq+' quduq</div><div class="em-desc">'+data.tavsif+'</div><div class="em-operator">👤 '+data.operator_nomi+'</div><div class="em-time">'+(t?t.toLocaleString('uz-UZ'):'--')+'</div></div>'+(isAdmin?'<button onclick="deleteEmergency(\''+d.id+'\')" style="background:rgba(239,68,68,.15);border:1px solid var(--red);color:var(--red);border-radius:8px;padding:6px 10px;font-size:.72rem;cursor:pointer;white-space:nowrap;margin-left:8px">🗑️</button>':'')+'</div></div>';
+      }).join('');
+    }
   });
 }
 
 async function resolveEmergency(id) {
   try {
     await db.collection('avariyalar').doc(id).update({ active: false });
-    showToast('✅ Avariya yopildi!', 'success');
+    showToast('✅ Avariya hal qilindi!', 'success');
+  } catch(e) { showToast('❌ Xatolik!', 'error'); }
+}
+
+async function deleteEmergency(id) {
+  if (!confirm('Bu yozuvni o\'chirishni tasdiqlaysizmi?')) return;
+  try {
+    await db.collection('avariyalar').doc(id).delete();
+    showToast('✅ O\'chirildi!', 'success');
   } catch(e) { showToast('❌ Xatolik!', 'error'); }
 }
 
@@ -1250,6 +1331,55 @@ function showToast(msg, type) {
   t.className = 'toast show ' + (type||'');
   setTimeout(() => t.className = 'toast', 2500);
 }
+
+// ===== ADMIN: YOZUVNI O'CHIRISH =====
+async function deleteRecord(id) {
+  if (!confirm('Bu yozuvni o\'chirishni tasdiqlaysizmi?')) return;
+  try {
+    await db.collection('tekshiruvlar').doc(id).delete();
+    showToast('✅ Yozuv o\'chirildi!', 'success');
+    loadHistory();
+  } catch(e) { showToast('❌ Xatolik!', 'error'); }
+}
+
+// ===== FON RANGI (TEMA) =====
+function applyTheme(bg, bg2, bg3, card) {
+  document.documentElement.style.setProperty('--bg', bg);
+  document.documentElement.style.setProperty('--bg2', bg2);
+  document.documentElement.style.setProperty('--bg3', bg3);
+  document.documentElement.style.setProperty('--card', card);
+  localStorage.setItem('theme', JSON.stringify({bg,bg2,bg3,card}));
+}
+
+// Saqlangan temani yuklash
+(function() {
+  const saved = localStorage.getItem('theme');
+  if (saved) {
+    try {
+      const t = JSON.parse(saved);
+      applyTheme(t.bg, t.bg2, t.bg3, t.card);
+      // Aktiv dot ni belgilash
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.theme-dot').forEach(d => {
+          d.style.border = d.dataset.bg === t.bg ? '3px solid var(--accent)' : '3px solid transparent';
+        });
+      });
+    } catch(e) {}
+  }
+})();
+
+document.addEventListener('click', e => {
+  const dot = e.target.closest('.theme-dot');
+  if (!dot) return;
+  applyTheme(dot.dataset.bg, dot.dataset.bg2, dot.dataset.bg3, dot.dataset.card);
+  document.querySelectorAll('.theme-dot').forEach(d => {
+    d.style.border = d === dot ? '3px solid var(--accent)' : '3px solid transparent';
+  });
+  showToast('🎨 Fon rangi o\'zgartirildi!', 'success');
+});
+
+// ===== PROFIL RASMI — kamera orqali ham olish imkoni =====
+// Mavjud file input accept="image/*" — mobil qurilmada kamera ham chiqadi, ishlaydi.
 
 // ===== QR KOD GENERATSIYA (Admin uchun) =====
 // Admin sozlamalar sahifasida QR kodlarni yuklab olishi mumkin
