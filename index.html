@@ -249,8 +249,13 @@ textarea{resize:none;min-height:80px}
     </div>
     <div class="form-group">
       <label>Parol</label>
-      <input type="password" id="login-password" placeholder="••••••••">
+      <div style="position:relative">
+        <input type="password" id="login-password" placeholder="••••••••" style="padding-right:44px">
+        <button type="button" id="toggle-password" onclick="togglePassword()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:transparent;border:none;cursor:pointer;color:var(--text2);font-size:1.1rem;padding:0;line-height:1">👁</button>
+      </div>
     </div>
+    <!-- Blok hisobi ko'rsatgich -->
+    <div id="lockout-banner" style="display:none;background:rgba(220,38,38,.12);border:1px solid var(--red);border-radius:10px;padding:10px 14px;font-size:.82rem;color:var(--red);text-align:center;margin-bottom:10px"></div>
     <button class="btn-primary" id="login-btn">KIRISH</button>
     <div class="auth-error" id="auth-error"></div>
     <div id="auth-success" style="color:#22c55e;font-size:.85rem;margin-top:12px;text-align:center;display:none"></div>
@@ -517,10 +522,90 @@ let selectedImages = [];
 let wellData = {};
 let historyFilter = 'all';
 
+// ===== HIMOYA TIZIMI =====
+const MAX_ATTEMPTS = 5;           // Maksimal urinishlar soni
+const LOCKOUT_MS   = 5 * 60 * 1000; // 5 daqiqa blok
+const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 daqiqa sessiya
+
+let loginAttempts = parseInt(localStorage.getItem('loginAttempts') || '0');
+let lockoutUntil  = parseInt(localStorage.getItem('lockoutUntil')  || '0');
+let sessionTimer  = null;
+let lastActivity  = Date.now();
+
+// Sessiya faolligini kuzatish
+['click','touchstart','keydown','scroll'].forEach(ev => {
+  document.addEventListener(ev, () => { lastActivity = Date.now(); }, { passive: true });
+});
+
+function startSessionWatcher() {
+  clearInterval(sessionTimer);
+  sessionTimer = setInterval(() => {
+    if (currentUser && Date.now() - lastActivity > SESSION_TIMEOUT_MS) {
+      showToast('⏰ Sessiya muddati tugadi. Qayta kiring!', 'error');
+      auth.signOut();
+    }
+  }, 60000); // har 1 daqiqada tekshir
+}
+
+function isLockedOut() {
+  if (Date.now() < lockoutUntil) return true;
+  if (lockoutUntil > 0 && Date.now() >= lockoutUntil) {
+    // Blok muddati o'tdi — tozalash
+    loginAttempts = 0;
+    lockoutUntil  = 0;
+    localStorage.removeItem('loginAttempts');
+    localStorage.removeItem('lockoutUntil');
+    document.getElementById('lockout-banner').style.display = 'none';
+  }
+  return false;
+}
+
+function updateLockoutBanner() {
+  const banner = document.getElementById('lockout-banner');
+  if (Date.now() < lockoutUntil) {
+    const remaining = Math.ceil((lockoutUntil - Date.now()) / 1000);
+    const mins = Math.floor(remaining / 60);
+    const secs = remaining % 60;
+    banner.style.display = 'block';
+    banner.textContent = `🔒 Hisobingiz ${mins}:${String(secs).padStart(2,'0')} ga bloklandi. Iltimos kuting.`;
+    document.getElementById('login-btn').disabled = true;
+    document.getElementById('login-btn').style.opacity = '0.5';
+    setTimeout(updateLockoutBanner, 1000);
+  } else {
+    banner.style.display = 'none';
+    document.getElementById('login-btn').disabled = false;
+    document.getElementById('login-btn').style.opacity = '1';
+    if (lockoutUntil > 0) { isLockedOut(); } // tozalash
+  }
+}
+
+// Sahifa yuklananda blok holatini tekshir
+if (lockoutUntil > 0) updateLockoutBanner();
+
+// Parol ko'rsatish/yashirish
+function togglePassword() {
+  const inp = document.getElementById('login-password');
+  const btn = document.getElementById('toggle-password');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    inp.type = 'password';
+    btn.textContent = '👁';
+  }
+}
+
 // ===== AUTH =====
 auth.onAuthStateChanged(async user => {
   if (user) {
+    // Muvaffaqiyatli kirish — urinishlarni tozalash
+    loginAttempts = 0;
+    lockoutUntil  = 0;
+    localStorage.removeItem('loginAttempts');
+    localStorage.removeItem('lockoutUntil');
     currentUser = user;
+    lastActivity = Date.now();
+    startSessionWatcher();
     document.getElementById('auth-screen').style.display = 'none';
     document.getElementById('app-screen').style.display = 'block';
     await loadProfile();
@@ -529,25 +614,63 @@ auth.onAuthStateChanged(async user => {
     startClock();
   } else {
     currentUser = null;
+    clearInterval(sessionTimer);
     document.getElementById('auth-screen').style.display = 'flex';
     document.getElementById('app-screen').style.display = 'none';
   }
 });
 
 document.getElementById('login-btn').addEventListener('click', async () => {
+  if (isLockedOut()) { updateLockoutBanner(); return; }
+
   const email = document.getElementById('login-email').value.trim();
-  const pass = document.getElementById('login-password').value;
-  const err = document.getElementById('auth-error');
+  const pass  = document.getElementById('login-password').value;
+  const err   = document.getElementById('auth-error');
   err.style.display = 'none';
+
+  if (!email || !pass) {
+    err.textContent = 'Email va parolni kiriting!';
+    err.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('login-btn');
+  btn.disabled = true;
+  btn.textContent = 'Tekshirilmoqda...';
+
   try {
     await auth.signInWithEmailAndPassword(email, pass);
+    btn.textContent = 'KIRISH';
+    btn.disabled = false;
   } catch(e) {
-    err.textContent = "Email yoki parol noto'g'ri!";
-    err.style.display = 'block';
+    loginAttempts++;
+    localStorage.setItem('loginAttempts', loginAttempts);
+    const remaining = MAX_ATTEMPTS - loginAttempts;
+    btn.textContent = 'KIRISH';
+    btn.disabled = false;
+
+    if (loginAttempts >= MAX_ATTEMPTS) {
+      lockoutUntil = Date.now() + LOCKOUT_MS;
+      localStorage.setItem('lockoutUntil', lockoutUntil);
+      err.style.display = 'none';
+      updateLockoutBanner();
+    } else {
+      err.textContent = `❌ Email yoki parol noto'g'ri! (${remaining} ta urinish qoldi)`;
+      err.style.display = 'block';
+    }
   }
 });
 
+// Enter tugmasi bilan kirish
+document.getElementById('login-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('login-btn').click();
+});
+document.getElementById('login-email').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('login-password').focus();
+});
+
 document.getElementById('logout-btn').addEventListener('click', async () => {
+  clearInterval(sessionTimer);
   await auth.signOut();
 });
 
