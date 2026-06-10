@@ -13,7 +13,6 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap');
 :root{--bg:#0a0f1e;--bg2:#0f1628;--bg3:#151d35;--card:#111827;--border:#1e2d4a;--accent:#f59e0b;--accent2:#fb923c;--green:#22c55e;--red:#ef4444;--blue:#3b82f6;--text:#e2e8f0;--text2:#94a3b8;--danger:#dc2626}
-body.light-mode{--bg:#f0f4f8;--bg2:#e2e8f0;--bg3:#d1dce8;--card:#ffffff;--border:#cbd5e1;--accent:#d97706;--accent2:#ea6d1e;--green:#16a34a;--red:#dc2626;--blue:#2563eb;--text:#1e293b;--text2:#64748b;--danger:#dc2626}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 #auth-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse at 50% 0%,#1a2a4a,var(--bg))}
@@ -305,10 +304,7 @@ textarea{resize:none;min-height:80px}
       <div class="user-avatar" id="header-avatar">A</div>
       <div class="user-name" id="header-name">Operator</div>
     </div>
-    <div style="display:flex;align-items:center;gap:6px">
-      <button id="theme-toggle-btn" onclick="toggleThemeMode()" title="Kun/Tun rejimi" style="background:transparent;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:1rem" aria-label="Kun/Tun">🌙</button>
-      <button id="sound-toggle-btn" onclick="toggleEmergencySound()" title="Avariya ovozi" style="background:transparent;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:1rem;margin-left:0" aria-label="Ovoz">🔔</button>
-    </div>
+    <button id="sound-toggle-btn" onclick="toggleEmergencySound()" title="Avariya ovozi" style="background:transparent;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:1rem;margin-left:6px" aria-label="Ovoz">🔔</button>
   </div>
   <div class="datetime-bar">
     <span id="current-date">--</span>
@@ -322,8 +318,8 @@ textarea{resize:none;min-height:80px}
       <div class="stat-card"><div class="stat-num" style="color:var(--green)" id="stat-soz">0</div><div class="stat-label">Soz</div></div>
       <div class="stat-card"><div class="stat-num" style="color:var(--red)" id="stat-nosoz">0</div><div class="stat-label">Nosoz</div></div>
     </div>
-    <!-- Bugungi obxod umumiy statistikasi -->
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between">
+    <!-- Bugungi obxod umumiy statistikasi (klik qilsa ro'yxat chiqadi) -->
+    <div id="today-obxod-panel" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:border-color .2s" onclick="openObxodModal()">
       <div style="display:flex;align-items:center;gap:8px">
         <span style="font-size:1.2rem">🔄</span>
         <div>
@@ -336,7 +332,26 @@ textarea{resize:none;min-height:80px}
         <div id="today-obxod-time" style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;color:var(--green)">--:--</div>
       </div>
     </div>
-    <div class="wells-grid" id="wells-grid"></div>
+
+    <!-- Stanok/qachalkalar animatsiyasi + quduqlar tugmasi -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="showPage('wells')">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div id="pumpjack-icon" style="font-size:2rem;line-height:1">⛽</div>
+        <div>
+          <div style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700">QUDUQLAR</div>
+          <div style="font-size:.75rem;color:var(--text2)" id="wells-btn-sub">Ishlayapti...</div>
+        </div>
+      </div>
+      <span style="color:var(--text2);font-size:1.2rem">›</span>
+    </div>
+
+    <div class="wells-grid" id="wells-grid" style="display:none"></div>
+  </div>
+
+  <!-- Quduqlar ro'yxati sahifasi -->
+  <div class="page" id="page-wells">
+    <div class="page-title">⛽ Quduqlar</div>
+    <div class="wells-grid" id="wells-grid-full"></div>
   </div>
 
   <div id="well-detail">
@@ -351,7 +366,7 @@ textarea{resize:none;min-height:80px}
       <div class="section-title">📱 QR Nazorat</div>
 
       <!-- 1-qadam: Kirish QR -->
-      <div class="qr-state-card active-scan" id="qr-enter-card">
+      <div class="qr-state-card" id="qr-enter-card" onclick="startQRScan('enter')">
         <div class="qr-state-icon">📷</div>
         <div class="qr-state-title">1. Kirish — QR Skanerlash</div>
         <div class="qr-state-sub">Quduq yaqinidagi QR kodni skaner qiling</div>
@@ -526,18 +541,33 @@ textarea{resize:none;min-height:80px}
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
       Bosh
     </button>
-    <button class="nav-btn" data-page="history">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-      Tarix
+    <button class="nav-btn" data-page="wells">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v3m0 14v3M2 12h3m14 0h3M5.636 5.636l2.122 2.122m8.484 8.484l2.122 2.122M5.636 18.364l2.122-2.122m8.484-8.484l2.122-2.122"/></svg>
+      Quduqlar
     </button>
     <button class="nav-emergency" data-page="emergency">
       <div class="em-icon"><svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4m0 4h.01"/></svg></div>
       <span>Avariya</span>
     </button>
+    <button class="nav-btn" data-page="history">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      Tarix
+    </button>
     <button class="nav-btn" data-page="settings">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
       Sozlama
     </button>
+  </div>
+</div>
+
+<!-- Bugungi obxod detail modal -->
+<div id="obxod-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;overflow-y:auto;padding:16px">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;max-width:480px;margin:0 auto;padding:20px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="font-family:'Rajdhani',sans-serif;font-size:1.2rem;font-weight:700">🔄 Bugungi obxod</div>
+      <button onclick="closeObxodModal()" style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text);cursor:pointer">✕</button>
+    </div>
+    <div id="obxod-modal-list"></div>
   </div>
 </div>
 
@@ -592,7 +622,6 @@ let qrStream = null;
 let qrAnimFrame = null;
 let enterScanned = false;
 let exitScanned = false;
-let isScanning = false;  // QR modal ochiq paytida ikkinchi bosishni bloklash
 let selectedStatus = null;
 let selectedImages = [];
 let wellData = {};
@@ -804,6 +833,11 @@ async function loadProfile() {
 document.getElementById('profile-avatar-big').addEventListener('click', () => {
   document.getElementById('profile-img-input').click();
 });
+
+// Kamera va galereya uchun ikki xil input qo'shamiz
+document.getElementById('profile-img-input').addEventListener('click', function(e) {
+  // Default: galereya ochiladi (capture yo'q)
+});
 document.getElementById('profile-img-input').addEventListener('change', async e => {
   const file = e.target.files[0];
   if (!file) return;
@@ -862,6 +896,7 @@ function showPage(page) {
   document.getElementById('page-'+page).classList.add('active');
   document.querySelector('[data-page="'+page+'"]')?.classList.add('active');
   if (page === 'history') loadHistory();
+  if (page === 'wells') renderWells();
   if (page === 'settings') {
     const isAdmin = currentUser && currentUser.email === 'omonovabbos233@gmail.com';
     if (isAdmin) {
@@ -910,18 +945,14 @@ async function loadAdminAlerts() {
 
 // ===== WELLS =====
 async function renderWells() {
-  const grid = document.getElementById('wells-grid');
-  grid.innerHTML = '<div class="loading" style="grid-column:1/-1"><div class="spinner"></div></div>';
   const today = new Date().toDateString();
   let soz = 0, nosoz = 0;
   const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
   let totalObxodCount = 0, totalObxodSec = 0;
 
-  // Admin: barcha tekshiruvlar; Operator: faqat o'ziniki
   let baseQ = db.collection('tekshiruvlar');
   if (!isAdmin) baseQ = baseQ.where('operator_uid', '==', currentUser.uid);
 
-  // Barcha bugungi ma'lumotlarni bir so'rovda olish
   let allSnap;
   try {
     allSnap = await baseQ.orderBy('vaqt', 'desc').get();
@@ -929,7 +960,9 @@ async function renderWells() {
 
   const allTodayDocs = allSnap.docs.filter(d => d.data().vaqt?.toDate().toDateString() === today);
 
-  grid.innerHTML = '';
+  // Ikkala grid uchun ham element yasaymiz
+  const fullGrid = document.getElementById('wells-grid-full');
+  fullGrid.innerHTML = '';
 
   for (const w of WELLS) {
     const todayDocs = allTodayDocs.filter(d => d.data().quduq === w);
@@ -951,29 +984,26 @@ async function renderWells() {
 
     const card = document.createElement('div');
     card.className = 'well-card' + (lastStatus === 'Soz' ? ' soz' : lastStatus ? ' nosoz' : '');
-
-    // Marта va vaqt ma'lumoti
-    let obxodLine = '';
-    if (count > 0) {
-      const mins = Math.round(totalDur / 60);
-      obxodLine = `<div class="well-obxod">${count}x · ${mins} min</div>`;
-    }
-
+    const mins = count > 0 ? Math.round(totalDur / 60) : 0;
+    const obxodLine = count > 0 ? `<div class="well-obxod">${count}x · ${mins} min</div>` : '';
     card.innerHTML =
       (count > 0 ? '<div class="well-count">' + count + '</div>' : '') +
       '<div class="well-name">' + w + '</div>' +
       '<div class="well-dot"></div>' +
       '<div class="well-time">' + (lastTime ? fmtTime(lastTime) : '--:--') + '</div>' +
       obxodLine;
-
     card.addEventListener('click', () => openWell(w));
-    grid.appendChild(card);
+    fullGrid.appendChild(card);
   }
 
   document.getElementById('stat-soz').textContent = soz;
   document.getElementById('stat-nosoz').textContent = nosoz;
 
-  // Umumiy obxod statistikasi paneli
+  // Bosh sahifadagi quduqlar tugmasi subtitli
+  const sub = document.getElementById('wells-btn-sub');
+  if (sub) sub.textContent = WELLS.length + ' ta quduq · ' + soz + ' soz · ' + nosoz + ' nosoz';
+
+  // Umumiy obxod statistikasi
   const summaryEl = document.getElementById('today-obxod-summary');
   const timeEl = document.getElementById('today-obxod-time');
   if (totalObxodCount === 0) {
@@ -984,6 +1014,67 @@ async function renderWells() {
     summaryEl.textContent = totalObxodCount + ' marta obxod qilindi';
     timeEl.textContent = totalMins + ' daqiqa';
   }
+}
+
+// ===== OBXOD DETAIL MODAL =====
+async function openObxodModal() {
+  document.getElementById('obxod-modal').style.display = 'block';
+  const el = document.getElementById('obxod-modal-list');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+  const today = new Date().toDateString();
+  const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
+  try {
+    let q = db.collection('tekshiruvlar').orderBy('vaqt', 'desc');
+    if (!isAdmin) q = db.collection('tekshiruvlar').where('operator_uid','==',currentUser.uid).orderBy('vaqt','desc');
+    const snap = await q.get();
+    const docs = snap.docs.filter(d => d.data().vaqt?.toDate().toDateString() === today);
+
+    if (!docs.length) {
+      el.innerHTML = '<div class="empty-state">Bugun hali obxod yo\'q</div>';
+      return;
+    }
+
+    // Quduqlar bo'yicha guruhlash
+    const grouped = {};
+    docs.forEach(d => {
+      const data = d.data();
+      if (!grouped[data.quduq]) grouped[data.quduq] = [];
+      grouped[data.quduq].push(data);
+    });
+
+    el.innerHTML = Object.entries(grouped).map(([quduq, list]) => {
+      const totalDur = list.reduce((s, d) => s + (d.davomiylik || 0), 0);
+      const totalMins = Math.round(totalDur / 60);
+      const rows = list.map(d => {
+        const t = d.vaqt?.toDate();
+        const dur = Math.round((d.davomiylik || 0) / 60);
+        const incomplete = d.tugallanmagan ? ' ⚠️' : '';
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
+          <div>
+            <span style="font-size:.85rem">${t ? fmtTime(t) : '--'}</span>
+            <span style="font-size:.75rem;color:var(--text2);margin-left:8px">${dur} min${incomplete}</span>
+            ${d.operator_nomi && isAdmin ? '<div style="font-size:.7rem;color:var(--text2)">👤 '+d.operator_nomi+'</div>' : ''}
+          </div>
+          <span class="h-status ${d.holat === 'Soz' ? 'soz' : 'nosoz'}" style="font-size:.75rem;padding:2px 8px">${d.holat}</span>
+        </div>`;
+      }).join('');
+
+      return `<div style="margin-bottom:14px">
+        <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center">
+          <span>⛽ ${quduq} quduq</span>
+          <span style="font-size:.8rem;color:var(--accent);font-weight:600">${list.length}x · ${totalMins} min</span>
+        </div>
+        ${rows}
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<div class="empty-state">Xatolik yuz berdi</div>';
+  }
+}
+
+function closeObxodModal() {
+  document.getElementById('obxod-modal').style.display = 'none';
 }
 
 // ===== WELL DETAIL =====
@@ -1033,8 +1124,6 @@ function openWell(w) {
 
 // ===== QR SCANNER =====
 function startQRScan(mode) {
-  if (isScanning) return; // Ikki marta bosishdan himoya
-  isScanning = true;
   qrScanMode = mode;
   const modal = document.getElementById('qr-modal');
   const title = document.getElementById('qr-modal-title');
@@ -1073,7 +1162,6 @@ function startQRScan(mode) {
 }
 
 function closeQRModal() {
-  isScanning = false;
   document.getElementById('qr-modal').classList.remove('open');
   if (qrStream) { qrStream.getTracks().forEach(t => t.stop()); qrStream = null; }
   if (qrAnimFrame) { cancelAnimationFrame(qrAnimFrame); qrAnimFrame = null; }
@@ -1196,24 +1284,19 @@ document.getElementById('back-btn').addEventListener('click', () => {
     }
   }
 
-  if (timerInterval) clearInterval(timerInterval);
-  if (qrUnlockTimer) clearTimeout(qrUnlockTimer);
-  isScanning = false;
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  if (qrUnlockTimer) { clearTimeout(qrUnlockTimer); qrUnlockTimer = null; }
+  enterScanned = false;
+  exitScanned = false;
+  wellStartTime = null;
   document.getElementById('well-detail').style.display = 'none';
   document.getElementById('page-home').classList.add('active');
   currentWell = null;
 });
 
-document.getElementById('qr-enter-card').addEventListener('click', () => {
-  if (enterScanned) return;
-  if (isScanning) return;
-  startQRScan('enter');
-});
-
 document.getElementById('qr-exit-card').addEventListener('click', () => {
   if (exitScanned) return;
   if (!enterScanned) { showToast('❗ Avval kirish QR skanerlang!', 'error'); return; }
-  if (isScanning) return;
   startQRScan('exit');
 });
 
@@ -1251,15 +1334,17 @@ document.getElementById('img-upload-gallery').addEventListener('click', () => {
 
 function handleImageFiles(files) {
   const now = new Date();
-  const todayStr = now.toDateString();
   Array.from(files).forEach(file => {
-    const fileDate = new Date(file.lastModified);
-    // Faqat sana tekshiriladi (vaqt emas)
-    if (fileDate.getFullYear() !== now.getFullYear() ||
-        fileDate.getMonth() !== now.getMonth() ||
-        fileDate.getDate() !== now.getDate()) {
-      showToast('⚠️ Faqat bugungi rasm qabul qilinadi!', 'error'); return;
+    const lm = file.lastModified;
+    if (lm && lm > 0) {
+      const fileDate = new Date(lm);
+      if (fileDate.getFullYear() !== now.getFullYear() ||
+          fileDate.getMonth() !== now.getMonth() ||
+          fileDate.getDate() !== now.getDate()) {
+        showToast('⚠️ Faqat bugungi rasm qabul qilinadi!', 'error'); return;
+      }
     }
+    // lastModified=0 yoki yo'q bo'lsa (iOS galereya) — qabul qilish
     const reader = new FileReader();
     reader.onload = ev => {
       const b64 = ev.target.result;
@@ -1370,30 +1455,6 @@ async function loadHistory() {
     }).join('');
   } catch(e) { el.innerHTML = '<div class="empty-state">Xatolik: '+e.message+'</div>'; }
 }
-
-// ===== KUN/TUN REJIMI =====
-let isLightMode = localStorage.getItem('lightMode') === 'true';
-
-function applyThemeMode() {
-  const btn = document.getElementById('theme-toggle-btn');
-  if (isLightMode) {
-    document.body.classList.add('light-mode');
-    btn.textContent = '☀️';
-  } else {
-    document.body.classList.remove('light-mode');
-    btn.textContent = '🌙';
-  }
-}
-
-function toggleThemeMode() {
-  isLightMode = !isLightMode;
-  localStorage.setItem('lightMode', isLightMode);
-  applyThemeMode();
-  showToast(isLightMode ? '☀️ Kun rejimi' : '🌙 Tun rejimi', 'success');
-}
-
-// Sahifa yuklananda holati tiklash
-(function() { applyThemeMode(); })();
 
 // ===== TOVUSH TIZIMI (Avariya uchun) =====
 let emergencySoundEnabled = localStorage.getItem('emergencySoundEnabled') !== 'false'; // default: yoqilgan
