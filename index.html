@@ -503,6 +503,13 @@ textarea{resize:none;min-height:80px}
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px" id="qr-codes-grid"></div>
       </div>
     </div>
+    <!-- Kun/tun rejimi -->
+    <div class="settings-section" style="margin-bottom:16px">
+      <div class="settings-item" onclick="toggleDayNight()" style="cursor:pointer">
+        <div class="s-label"><span id="theme-toggle-icon">🌙</span> <span id="theme-toggle-label">Tungi rejim</span></div>
+        <span style="color:var(--text2);font-size:1.2rem">›</span>
+      </div>
+    </div>
     <!-- Fon rangi -->
     <div class="section-card" style="margin-bottom:16px">
       <div class="section-title">🎨 Fon rangi</div>
@@ -540,10 +547,6 @@ textarea{resize:none;min-height:80px}
     <button class="nav-btn active" data-page="home">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
       Bosh
-    </button>
-    <button class="nav-btn" data-page="wells">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v3m0 14v3M2 12h3m14 0h3M5.636 5.636l2.122 2.122m8.484 8.484l2.122 2.122M5.636 18.364l2.122-2.122m8.484-8.484l2.122-2.122"/></svg>
-      Quduqlar
     </button>
     <button class="nav-emergency" data-page="emergency">
       <div class="em-icon"><svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4m0 4h.01"/></svg></div>
@@ -714,6 +717,7 @@ auth.onAuthStateChanged(async user => {
     document.getElementById('auth-screen').style.display = 'none';
     document.getElementById('app-screen').style.display = 'block';
     await loadProfile();
+    applyDayNightMode();
     renderWells();
     listenEmergencies();
     startClock();
@@ -1605,6 +1609,47 @@ async function deleteRecord(id) {
     showToast('✅ Yozuv o\'chirildi!', 'success');
     loadHistory();
   } catch(e) { showToast('❌ Xatolik!', 'error'); }
+}
+
+// ===== KUN/TUN REJIMI =====
+let isDayMode = localStorage.getItem('isDayMode') === 'true';
+
+function toggleDayNight() {
+  isDayMode = !isDayMode;
+  localStorage.setItem('isDayMode', isDayMode);
+  applyDayNightMode();
+  showToast(isDayMode ? '☀️ Kunduzgi rejim' : '🌙 Tungi rejim', 'success');
+}
+
+function applyDayNightMode() {
+  const icon = document.getElementById('theme-toggle-icon');
+  const label = document.getElementById('theme-toggle-label');
+  if (isDayMode) {
+    applyTheme('#e8edf5','#f0f4fa','#f8fafc','#ffffff');
+    document.documentElement.style.setProperty('--text','#1e293b');
+    document.documentElement.style.setProperty('--text2','#64748b');
+    document.documentElement.style.setProperty('--border','#cbd5e1');
+    if (icon) icon.textContent = '🌙';
+    if (label) label.textContent = 'Tungi rejimga o\'tish';
+  } else {
+    document.documentElement.style.setProperty('--text','#e2e8f0');
+    document.documentElement.style.setProperty('--text2','#94a3b8');
+    document.documentElement.style.setProperty('--border','#1e2d4a');
+    if (icon) icon.textContent = '☀️';
+    if (label) label.textContent = 'Kunduzgi rejimga o\'tish';
+    // Saved theme yoki default
+    const saved = localStorage.getItem('theme');
+    if (saved) {
+      try { const t = JSON.parse(saved); applyTheme(t.bg, t.bg2, t.bg3, t.card); } catch(e) {}
+    } else {
+      applyTheme('#0a0f1e','#0f1628','#151d35','#111827');
+    }
+  }
+}
+
+// Saqlangan rejimni yuklash
+if (isDayMode) {
+  document.addEventListener('DOMContentLoaded', applyDayNightMode);
 }
 
 // ===== FON RANGI (TEMA) =====
