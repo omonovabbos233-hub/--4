@@ -37,7 +37,7 @@ body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-h
 .user-name{font-size:.85rem;font-weight:600}
 .datetime-bar{background:var(--bg3);padding:6px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);font-size:.78rem;color:var(--text2)}
 #current-time{color:var(--accent);font-weight:600;font-family:'Rajdhani',sans-serif}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);display:flex;z-index:100}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);display:flex;z-index:200}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px;gap:4px;cursor:pointer;border:none;background:transparent;color:var(--text2);font-family:'Exo 2',sans-serif;font-size:.65rem;transition:color .2s}
 .nav-btn.active{color:var(--accent)}
 .nav-btn svg{width:22px;height:22px}
@@ -65,8 +65,8 @@ body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-h
 .stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center}
 .stat-num{font-family:'Rajdhani',sans-serif;font-size:1.6rem;font-weight:700;color:var(--accent)}
 .stat-label{font-size:.65rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
-#well-detail{display:none;padding:16px;padding-bottom:80px}
-.back-btn{display:flex;align-items:center;gap:8px;color:var(--accent);font-size:.9rem;font-weight:600;cursor:pointer;margin-bottom:16px;border:none;background:transparent}
+#well-detail{display:none;position:fixed;inset:0;background:var(--bg);z-index:150;overflow-y:auto;padding:16px;padding-bottom:80px;padding-top:16px}
+.back-btn{display:flex;align-items:center;gap:8px;color:var(--accent);font-size:.9rem;font-weight:600;cursor:pointer;margin-bottom:16px;border:none;background:var(--bg);padding:8px 0;position:sticky;top:0;z-index:10}
 .section-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px}
 .section-title{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
 .status-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
@@ -336,7 +336,37 @@ textarea{resize:none;min-height:80px}
     <!-- Stanok/qachalkalar animatsiyasi + quduqlar tugmasi -->
     <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="showPage('wells')">
       <div style="display:flex;align-items:center;gap:10px">
-        <div id="pumpjack-icon" style="font-size:2rem;line-height:1">⛽</div>
+        <div id="pumpjack-icon">
+          <svg style="width:40px;height:40px" viewBox="0 0 120 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="95" width="110" height="5" rx="2" fill="#334155"/>
+            <rect x="0" y="100" width="120" height="10" rx="2" fill="#1e293b"/>
+            <rect x="30" y="82" width="60" height="13" rx="2" fill="#334155" stroke="#475569" stroke-width="1"/>
+            <rect x="38" y="78" width="44" height="6" rx="1" fill="#3f5068"/>
+            <line x1="52" y1="82" x2="44" y2="38" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
+            <line x1="68" y1="82" x2="76" y2="38" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
+            <line x1="47" y1="62" x2="73" y2="62" stroke="#64748b" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="50" y1="50" x2="70" y2="50" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="60" cy="36" r="5" fill="#475569" stroke="#f59e0b" stroke-width="1.5"/>
+            <g class="beam">
+              <rect x="8" y="32" width="86" height="8" rx="4" fill="#f59e0b"/>
+              <path d="M8 36 Q4 36 4 40 Q4 46 10 48 L18 48 L18 40 L8 40 Z" fill="#e8920a"/>
+              <rect x="88" y="26" width="22" height="20" rx="4" fill="#475569" stroke="#64748b" stroke-width="1.5"/>
+              <rect x="90" y="28" width="18" height="16" rx="3" fill="#3f5068"/>
+            </g>
+            <g class="pump-rod">
+              <line x1="13" y1="48" x2="13" y2="82" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
+              <rect x="8" y="78" width="10" height="6" rx="2" fill="#475569"/>
+            </g>
+            <g class="crank">
+              <circle cx="82" cy="72" r="11" fill="#1e293b" stroke="#475569" stroke-width="2"/>
+              <circle cx="82" cy="72" r="7" fill="#263548"/>
+              <line x1="82" y1="72" x2="82" y2="61" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="82" cy="61" r="3" fill="#f59e0b"/>
+            </g>
+            <rect x="70" y="78" width="30" height="14" rx="2" fill="#263548" stroke="#334155" stroke-width="1"/>
+            <ellipse class="oil-drop" cx="13" cy="90" rx="2" ry="3" fill="#f59e0b" opacity="0"/>
+          </svg>
+        </div>
         <div>
           <div style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700">QUDUQLAR</div>
           <div style="font-size:.75rem;color:var(--text2)" id="wells-btn-sub">Ishlayapti...</div>
@@ -1082,7 +1112,14 @@ function closeObxodModal() {
 }
 
 // ===== WELL DETAIL =====
+let prevPage = 'home'; // qaysi sahifadan kelindi
+
 function openWell(w) {
+  // Qaysi sahifa aktiv — saqlaymiz
+  prevPage = 'home';
+  document.querySelectorAll('.page').forEach(p => {
+    if (p.classList.contains('active')) prevPage = p.id.replace('page-', '');
+  });
   currentWell = w;
   selectedStatus = null;
   selectedImages = [];
@@ -1091,7 +1128,7 @@ function openWell(w) {
   enterScanned = false;
   exitScanned = false;
 
-  document.getElementById('page-home').classList.remove('active');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('well-detail').style.display = 'block';
   document.getElementById('wd-title').textContent = w + ' - Quduq';
   document.getElementById('wd-subtitle').textContent = new Date().toLocaleDateString('uz-UZ');
@@ -1294,7 +1331,7 @@ document.getElementById('back-btn').addEventListener('click', () => {
   exitScanned = false;
   wellStartTime = null;
   document.getElementById('well-detail').style.display = 'none';
-  document.getElementById('page-home').classList.add('active');
+  document.getElementById('page-' + prevPage).classList.add('active');
   currentWell = null;
 });
 
