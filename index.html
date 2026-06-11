@@ -604,6 +604,17 @@ textarea{resize:none;min-height:80px}
   </div>
 </div>
 
+<!-- Tekshiruv detail modal -->
+<div id="tekshiruv-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:250;overflow-y:auto;padding:16px">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;max-width:480px;margin:0 auto;padding:20px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="font-family:'Rajdhani',sans-serif;font-size:1.2rem;font-weight:700">📋 Tekshiruv</div>
+      <button onclick="closeTekshiruvModal()" style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text);cursor:pointer">✕</button>
+    </div>
+    <div id="tekshiruv-modal-content"></div>
+  </div>
+</div>
+
 <!-- QR Scanner Modal -->
 <div id="qr-modal">
   <h3 id="qr-modal-title">📷 QR Skanerlash</h3>
@@ -1026,7 +1037,7 @@ async function renderWells() {
       '<div class="well-dot"></div>' +
       '<div class="well-time">' + (lastTime ? fmtTime(lastTime) : '--:--') + '</div>' +
       obxodLine;
-    card.addEventListener('click', () => openWell(w));
+    card.addEventListener('click', () => showWellStats(w));
     fullGrid.appendChild(card);
   }
 
@@ -1050,7 +1061,72 @@ async function renderWells() {
   }
 }
 
-// ===== OBXOD DETAIL MODAL =====
+// ===== QUDUQ STATISTIKA MODAL =====
+async function showWellStats(w) {
+  const modal = document.getElementById('tekshiruv-modal');
+  const content = document.getElementById('tekshiruv-modal-content');
+  modal.style.display = 'block';
+  content.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  
+  const today = new Date().toDateString();
+  const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
+  try {
+    const snap = await db.collection('tekshiruvlar').where('quduq','==',w).get();
+    let docs = snap.docs.filter(d => d.data().vaqt?.toDate().toDateString() === today);
+    if (!isAdmin) docs = docs.filter(d => d.data().operator_uid === currentUser.uid);
+    docs.sort((a,b) => (b.data().vaqt?.toDate()||0) - (a.data().vaqt?.toDate()||0));
+
+    const totalDur = docs.reduce((s,d) => s + (d.data().davomiylik||0), 0);
+    const lastStatus = docs[0]?.data().holat || null;
+    const isSoz = lastStatus === 'Soz';
+    const statusColor = !lastStatus ? 'var(--text2)' : isSoz ? 'var(--green)' : 'var(--red)';
+
+    const rows = docs.length ? docs.map(d => {
+      const data = d.data();
+      const t = data.vaqt?.toDate();
+      const kirish = data.kirish_vaqt?.toDate ? data.kirish_vaqt.toDate() : null;
+      const chiqish = data.chiqish_vaqt?.toDate ? data.chiqish_vaqt.toDate() : null;
+      return `<div class="history-item" style="cursor:pointer;margin-bottom:8px" onclick="closeTekshiruvModal();setTimeout(()=>showObxodDetail('${d.id}'),100)">
+        <div>
+          <div class="h-time">${kirish?fmtTime(kirish):'--'} → ${chiqish?fmtTime(chiqish):'--'} ${data.tugallanmagan?'<span style="color:var(--red)">⚠️</span>':''}</div>
+          <div class="h-duration">⏱ ${fmtDur(data.davomiylik||0)} · ${data.operator_nomi||''}</div>
+        </div>
+        <div class="h-status ${isSoz?'soz':'nosoz'}" style="font-size:.75rem">${data.holat?.split(' — ')[0]||data.holat}</div>
+      </div>`;
+    }).join('') : '<div class="empty-state"><div class="empty-icon">📋</div>Bugun obxod yo\'q</div>';
+
+    content.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div style="font-family:'Rajdhani',sans-serif;font-size:1.8rem;font-weight:700;color:var(--accent)">${w}</div>
+        <div style="flex:1">
+          <div style="font-size:.72rem;color:var(--text2)">Quduq holati</div>
+          <div style="font-weight:700;color:${statusColor}">${lastStatus||'Tekshirilmagan'}</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
+        <div style="background:var(--bg2);border-radius:10px;padding:10px;text-align:center">
+          <div style="font-family:'Rajdhani',sans-serif;font-size:1.6rem;font-weight:700;color:var(--accent)">${docs.length}</div>
+          <div style="font-size:.65rem;color:var(--text2);text-transform:uppercase">Obxod</div>
+        </div>
+        <div style="background:var(--bg2);border-radius:10px;padding:10px;text-align:center">
+          <div style="font-family:'Rajdhani',sans-serif;font-size:1.6rem;font-weight:700;color:var(--green)">${Math.round(totalDur/60)}</div>
+          <div style="font-size:.65rem;color:var(--text2);text-transform:uppercase">Daqiqa</div>
+        </div>
+        <div style="background:var(--bg2);border-radius:10px;padding:10px;text-align:center">
+          <div style="font-family:'Rajdhani',sans-serif;font-size:1.6rem;font-weight:700;color:${statusColor}">${lastStatus?'✓':'—'}</div>
+          <div style="font-size:.65rem;color:var(--text2);text-transform:uppercase">Holat</div>
+        </div>
+      </div>
+      <div style="font-family:'Rajdhani',sans-serif;font-size:.85rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Bugungi tekshiruvlar</div>
+      ${rows}
+      <button onclick="closeTekshiruvModal();openWell('${w}')" style="width:100%;margin-top:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border:none;border-radius:12px;padding:14px;font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:1px;cursor:pointer">
+        📍 OBXOD BOSHLASH
+      </button>
+    `;
+  } catch(e) {
+    content.innerHTML = '<div class="empty-state">❌ ' + e.message + '</div>';
+  }
+}
 async function openObxodModal() {
   document.getElementById('obxod-modal').style.display = 'block';
   const el = document.getElementById('obxod-modal-list');
@@ -1109,6 +1185,71 @@ async function openObxodModal() {
 
 function closeObxodModal() {
   document.getElementById('obxod-modal').style.display = 'none';
+}
+
+function closeTekshiruvModal() {
+  document.getElementById('tekshiruv-modal').style.display = 'none';
+}
+
+async function showObxodDetail(docId) {
+  const modal = document.getElementById('tekshiruv-modal');
+  const content = document.getElementById('tekshiruv-modal-content');
+  modal.style.display = 'block';
+  content.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const doc = await db.collection('tekshiruvlar').doc(docId).get();
+    if (!doc.exists) { content.innerHTML = '<div class="empty-state">Topilmadi</div>'; return; }
+    const d = doc.data();
+    const vaqt = d.vaqt?.toDate();
+    const kirish = d.kirish_vaqt?.toDate ? d.kirish_vaqt.toDate() : null;
+    const chiqish = d.chiqish_vaqt?.toDate ? d.chiqish_vaqt.toDate() : null;
+    const isSoz = d.holat === 'Soz';
+    const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
+    content.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-family:'Rajdhani',sans-serif;font-size:1.6rem;font-weight:700;color:var(--accent)">${d.quduq} quduq</div>
+        <div class="h-status ${isSoz?'soz':'nosoz'}" style="font-size:.85rem">${d.holat?.split(' — ')[0]||d.holat}</div>
+      </div>
+      ${d.tugallanmagan ? '<div style="background:rgba(239,68,68,.12);border:1px solid var(--red);border-radius:8px;padding:8px 12px;font-size:.82rem;color:var(--red);margin-bottom:12px">⚠️ Tugallanmagan obxod</div>' : ''}
+      <div style="background:var(--bg2);border-radius:10px;padding:12px;margin-bottom:12px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div>
+            <div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Kirish</div>
+            <div style="font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;color:var(--green)">${kirish ? fmtTime(kirish) : '--:--'}</div>
+          </div>
+          <div>
+            <div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Chiqish</div>
+            <div style="font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;color:var(--accent)">${chiqish ? fmtTime(chiqish) : '--:--'}</div>
+          </div>
+          <div>
+            <div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Davomiylik</div>
+            <div style="font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700">${fmtDur(d.davomiylik||0)}</div>
+          </div>
+          <div>
+            <div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Sana</div>
+            <div style="font-family:'Rajdhani',sans-serif;font-size:.95rem;font-weight:700">${vaqt ? vaqt.toLocaleDateString('uz-UZ') : '--'}</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--bg2);border-radius:10px;padding:12px;margin-bottom:12px">
+        <div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">👤 Operator</div>
+        <div style="font-weight:600">${d.operator_nomi||'--'}</div>
+      </div>
+      ${d.holat && d.holat !== 'Soz' ? `<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:12px;margin-bottom:12px">
+        <div style="font-size:.72rem;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">❌ Nosozlik sababi</div>
+        <div style="font-size:.88rem;color:var(--text)">${d.holat.replace('Nosoz — ','')}</div>
+      </div>` : ''}
+      ${d.izoh ? `<div style="background:var(--bg2);border-radius:10px;padding:12px;margin-bottom:12px">
+        <div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">💬 Izoh</div>
+        <div style="font-size:.88rem">${d.izoh}</div>
+      </div>` : ''}
+      ${d.rasmlar?.length ? `<div>
+        <div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📸 Rasmlar</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">${d.rasmlar.map(r=>`<img src="${r}" onclick="this.style.width=this.style.width==='100%'?'70px':'100%'" style="width:70px;height:70px;border-radius:8px;object-fit:cover;border:1px solid var(--border);cursor:pointer;transition:all .3s">`).join('')}</div>
+      </div>` : ''}
+      ${isAdmin ? `<button onclick="deleteRecord('${docId}');closeTekshiruvModal()" style="width:100%;margin-top:16px;background:rgba(239,68,68,.15);border:1px solid var(--red);color:var(--red);border-radius:10px;padding:12px;font-size:.88rem;cursor:pointer">🗑️ Yozuvni o'chirish</button>` : ''}
+    `;
+  } catch(e) { content.innerHTML = '<div class="empty-state">❌ ' + e.message + '</div>'; }
 }
 
 // ===== WELL DETAIL =====
@@ -1448,17 +1589,26 @@ async function loadWellHistory(w) {
   const today = new Date().toDateString();
   const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
   try {
+    // Composite index muammosini chetlash: faqat quduq bo'yicha filter, qolganini JS'da
     let q = db.collection('tekshiruvlar').where('quduq','==',w);
-    if (!isAdmin) q = q.where('operator_uid','==',currentUser.uid);
-    const snap = await q.orderBy('vaqt','desc').get();
-    const docs = snap.docs.filter(d => d.data().vaqt?.toDate().toDateString() === today);
+    const snap = await q.get();
+    let docs = snap.docs.filter(d => d.data().vaqt?.toDate().toDateString() === today);
+    if (!isAdmin) docs = docs.filter(d => d.data().operator_uid === currentUser.uid);
+    docs.sort((a,b) => (b.data().vaqt?.toDate()||0) - (a.data().vaqt?.toDate()||0));
     if (!docs.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div>Bugun yo\'q</div>'; return; }
     el.innerHTML = docs.map(d => {
       const data = d.data();
       const t = data.vaqt?.toDate();
-      return '<div class="history-item"><div><div class="h-time">'+(t?fmtTime(t):'--')+'</div><div class="h-duration">⏱ '+fmtDur(data.davomiylik||0)+'</div></div><div class="h-status '+(data.holat==='Soz'?'soz':'nosoz')+'">'+data.holat+'</div></div>';
+      const incomplete = data.tugallanmagan ? '<span style="color:var(--red);font-size:.7rem;margin-left:4px">⚠️</span>' : '';
+      return `<div class="history-item" style="cursor:pointer" onclick="showObxodDetail('${d.id}')">
+        <div>
+          <div class="h-time">${t?fmtTime(t):'--'} ${incomplete}</div>
+          <div class="h-duration">⏱ ${fmtDur(data.davomiylik||0)} · ${data.operator_nomi||''}</div>
+        </div>
+        <div class="h-status ${data.holat==='Soz'?'soz':'nosoz'}">${data.holat?.split(' — ')[0]||data.holat}</div>
+      </div>`;
     }).join('');
-  } catch(e) { el.innerHTML = '<div class="empty-state">Xatolik</div>'; }
+  } catch(e) { el.innerHTML = '<div class="empty-state">❌ ' + e.message + '</div>'; }
 }
 
 // ===== HISTORY =====
