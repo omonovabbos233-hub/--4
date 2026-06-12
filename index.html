@@ -380,7 +380,7 @@ textarea{resize:none;min-height:80px}
 
   <!-- Quduqlar ro'yxati sahifasi -->
   <div class="page" id="page-wells">
-    <div class="page-title">⛽ Quduqlar</div>
+    <div class="page-title" style="display:flex;align-items:center;gap:8px"><svg style="width:28px;height:28px" viewBox="0 0 120 110" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="82" width="60" height="13" rx="2" fill="#334155" stroke="#475569" stroke-width="1"/><line x1="52" y1="82" x2="44" y2="38" stroke="#64748b" stroke-width="4" stroke-linecap="round"/><line x1="68" y1="82" x2="76" y2="38" stroke="#64748b" stroke-width="4" stroke-linecap="round"/><line x1="47" y1="62" x2="73" y2="62" stroke="#64748b" stroke-width="2.5" stroke-linecap="round"/><circle cx="60" cy="36" r="5" fill="#475569" stroke="#f59e0b" stroke-width="1.5"/><g class="beam"><rect x="8" y="32" width="86" height="8" rx="4" fill="#f59e0b"/><rect x="88" y="26" width="22" height="20" rx="4" fill="#475569" stroke="#64748b" stroke-width="1.5"/></g><g class="pump-rod"><line x1="13" y1="48" x2="13" y2="82" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/></g><g class="crank"><circle cx="82" cy="72" r="11" fill="#1e293b" stroke="#475569" stroke-width="2"/><line x1="82" y1="72" x2="82" y2="61" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/><circle cx="82" cy="61" r="3" fill="#f59e0b"/></g></svg> Quduqlar</div>
     <div class="wells-grid" id="wells-grid-full"></div>
   </div>
 
@@ -464,10 +464,7 @@ textarea{resize:none;min-height:80px}
       <div style="font-size:.75rem;color:var(--text2);margin-top:8px">⚠️ Faqat bugungi rasmlar qabul qilinadi</div>
     </div>
     <button class="btn-complete" id="complete-btn" disabled>🔒 Avval QR skanerlang</button>
-    <div class="section-card" style="margin-top:14px">
-      <div class="section-title">📋 Bugungi tekshiruvlar</div>
-      <div id="well-history-list"></div>
-    </div>
+
   </div>
 
   <div class="page" id="page-history">
@@ -638,6 +635,7 @@ textarea{resize:none;min-height:80px}
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
 
 <script>
 const firebaseConfig = {
@@ -651,6 +649,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+const storage = firebase.storage();
 
 const WELLS = ['1GS','16','23','28','31','32','37','40','42','43'];
 const MIN_SECONDS = 600; // 10 daqiqa
@@ -1544,6 +1543,24 @@ function handleImageFiles(files) {
 document.getElementById('img-input-camera').addEventListener('change', e => handleImageFiles(e.target.files));
 document.getElementById('img-input-gallery').addEventListener('change', e => handleImageFiles(e.target.files));
 
+// Rasмni base64 dan Blob ga aylantirish
+function base64ToBlob(base64) {
+  const parts = base64.split(';base64,');
+  const contentType = parts[0].split(':')[1];
+  const raw = atob(parts[1]);
+  const arr = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+  return new Blob([arr], { type: contentType });
+}
+
+// Rasmni Firebase Storage ga yuklash
+async function uploadImage(base64, path) {
+  const blob = base64ToBlob(base64);
+  const ref = storage.ref(path);
+  await ref.put(blob);
+  return await ref.getDownloadURL();
+}
+
 document.getElementById('complete-btn').addEventListener('click', async () => {
   if (!currentWell) return;
   if (!selectedStatus) { showToast('❗ Holat tanlang!', 'error'); return; }
@@ -1554,6 +1571,25 @@ document.getElementById('complete-btn').addEventListener('click', async () => {
   if (incomplete) {
     document.getElementById('warn-banner').className = 'warn-banner show';
   }
+
+  const btn = document.getElementById('complete-btn');
+  btn.disabled = true;
+
+  // Rasmlarni yuklash
+  const images = selectedImages.filter(Boolean).slice(0, 3);
+  let rasmUrls = [];
+  if (images.length > 0) {
+    showToast('📤 Rasmlar yuklanmoqda...', '');
+    try {
+      const ts = Date.now();
+      rasmUrls = await Promise.all(images.map((b64, i) =>
+        uploadImage(b64, `obxod/${currentUser.uid}/${ts}_${i}.jpg`)
+      ));
+    } catch(e) {
+      showToast('⚠️ Rasm yuklanmadi, obxod rasmsiz saqlanadi.', 'error');
+    }
+  }
+
   showToast('Saqlanmoqda...', '');
   try {
     await db.collection('tekshiruvlar').add({
@@ -1566,7 +1602,7 @@ document.getElementById('complete-btn').addEventListener('click', async () => {
       vaqt: new Date(),
       operator_uid: currentUser.uid,
       operator_nomi: userName,
-      rasmlar: selectedImages.filter(Boolean).slice(0, 3),
+      rasmlar: rasmUrls,
       tugallanmagan: incomplete,
       qr_kirish: true,
       qr_chiqish: true
@@ -1580,7 +1616,10 @@ document.getElementById('complete-btn').addEventListener('click', async () => {
       currentWell = null;
       renderWells();
     }, 1000);
-  } catch(e) { showToast('❌ Xatolik: ' + e.message, 'error'); }
+  } catch(e) {
+    btn.disabled = false;
+    showToast('❌ Xatolik: ' + e.message, 'error');
+  }
 });
 
 async function loadWellHistory(w) {
@@ -1780,6 +1819,46 @@ document.getElementById('em-send-btn').addEventListener('click', async () => {
   } catch(e) { showToast('❌ Xatolik!', 'error'); }
 });
 
+// ===== ILOVA YOPILGANDA / FON GA O'TGANDA OGOHLANTIRISH =====
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && enterScanned && !exitScanned && wellStartTime && currentUser) {
+    const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
+    if (!isAdmin) {
+      const elapsed = Math.floor((new Date() - wellStartTime) / 1000);
+      sendIncompleteAlert(elapsed);
+    }
+  }
+});
+
+window.addEventListener('beforeunload', () => {
+  if (enterScanned && !exitScanned && wellStartTime && currentUser) {
+    const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
+    if (!isAdmin) {
+      const elapsed = Math.floor((new Date() - wellStartTime) / 1000);
+      // Sinxron yuborish uchun sendBeacon ishlatamiz
+      try {
+        const payload = JSON.stringify({
+          quduq: currentWell,
+          operator_uid: currentUser.uid,
+          operator_nomi: userName,
+          kirish_vaqt: wellStartTime?.toISOString(),
+          tur_vaqt: new Date().toISOString(),
+          davomiylik: elapsed,
+          sabab: 'Ilovadan chiqib ketdi (sahifa yopildi)',
+          vaqt: new Date().toISOString(),
+          ko_rildi: false
+        });
+        // Firebase REST API orqali sinxron yozish
+        const projectId = 'quduqlar-nazorati'; // Firebase project ID
+        navigator.sendBeacon(
+          `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/ogohlantirishlar`,
+          new Blob([payload], { type: 'application/json' })
+        );
+      } catch(e) {}
+    }
+  }
+});
+
 // ===== TOAST =====
 function showToast(msg, type) {
   const t = document.getElementById('toast');
@@ -1792,6 +1871,17 @@ function showToast(msg, type) {
 async function deleteRecord(id) {
   if (!confirm('Bu yozuvni o\'chirishni tasdiqlaysizmi?')) return;
   try {
+    // Avval rasmlarni Storage dan o'chirish
+    const doc = await db.collection('tekshiruvlar').doc(id).get();
+    if (doc.exists) {
+      const rasmlar = doc.data().rasmlar || [];
+      await Promise.allSettled(rasmlar.map(url => {
+        try {
+          return storage.refFromURL(url).delete();
+        } catch(e) { return Promise.resolve(); }
+      }));
+    }
+    // Keyin Firestore yozuvini o'chirish
     await db.collection('tekshiruvlar').doc(id).delete();
     showToast('✅ Yozuv o\'chirildi!', 'success');
     loadHistory();
