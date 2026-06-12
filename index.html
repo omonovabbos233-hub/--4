@@ -885,20 +885,43 @@ document.getElementById('profile-img-input').addEventListener('click', function(
 document.getElementById('profile-img-input').addEventListener('change', async e => {
   const file = e.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = async ev => {
-    const b64 = ev.target.result;
-    try {
-      await db.collection('users').doc(currentUser.uid).set({ photoURL: b64, name: userName }, { merge: true });
-      const pb = document.getElementById('profile-avatar-big');
-      let img = pb.querySelector('img');
-      if (!img) { img = document.createElement('img'); pb.appendChild(img); }
-      img.src = b64;
-      document.getElementById('header-avatar').innerHTML = '<img src="'+b64+'">';
-      showToast('✅ Profil yangilandi!', 'success');
-    } catch(e) { showToast('❌ Xatolik!', 'error'); }
-  };
-  reader.readAsDataURL(file);
+  // Rasmni kichiklashtirish (Firestore 1MB limit uchun)
+  function resizeImage(file, maxSize, quality) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let w = img.width, h = img.height;
+          if (w > maxSize || h > maxSize) {
+            if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+            else { w = Math.round(w * maxSize / h); h = maxSize; }
+          }
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+  try {
+    showToast('⏳ Rasm yuklanmoqda...', 'success');
+    const b64 = await resizeImage(file, 300, 0.7);
+    await db.collection('users').doc(currentUser.uid).set({ photoURL: b64, name: userName }, { merge: true });
+    const pb = document.getElementById('profile-avatar-big');
+    let img = pb.querySelector('img');
+    if (!img) { img = document.createElement('img'); pb.appendChild(img); }
+    img.src = b64;
+    document.getElementById('header-avatar').innerHTML = '<img src="'+b64+'">';
+    document.getElementById('delete-photo-btn').classList.add('visible');
+    showToast('✅ Profil rasmi yangilandi!', 'success');
+  } catch(err) {
+    console.error('Photo upload error:', err);
+    showToast('❌ Xatolik: ' + (err.message || 'Rasm saqlanmadi'), 'error');
+  }
 });
 
 document.getElementById('delete-photo-btn').addEventListener('click', async () => {
