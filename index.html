@@ -12,1963 +12,764 @@
 <title>Quduqlar Nazorati</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap');
-:root{--bg:#0a0f1e;--bg2:#0f1628;--bg3:#151d35;--card:#111827;--border:#1e2d4a;--accent:#f59e0b;--accent2:#fb923c;--green:#22c55e;--red:#ef4444;--blue:#3b82f6;--text:#e2e8f0;--text2:#94a3b8;--danger:#dc2626}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-#auth-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse at 50% 0%,#1a2a4a,var(--bg))}
-.auth-logo{font-family:'Rajdhani',sans-serif;font-size:2.4rem;font-weight:700;color:var(--accent);letter-spacing:2px;margin-bottom:8px;text-align:center}
-.auth-sub{color:var(--text2);font-size:.85rem;letter-spacing:3px;text-transform:uppercase;margin-bottom:40px;text-align:center}
-.auth-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px 24px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
-.auth-card h2{font-family:'Rajdhani',sans-serif;font-size:1.4rem;font-weight:600;margin-bottom:24px}
-.form-group{margin-bottom:16px}
-.form-group label{display:block;font-size:.8rem;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
-.form-group input,.form-group select,.form-group textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:.95rem;outline:none;transition:border-color .2s}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent)}
-.form-group select option{background:var(--bg2)}
-.btn-primary{width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border:none;border-radius:10px;padding:14px;font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:opacity .2s,transform .1s}
-.btn-primary:active{transform:scale(.98);opacity:.9}
-.auth-error{color:var(--red);font-size:.85rem;margin-top:12px;text-align:center;display:none}
-#app-screen{display:none;min-height:100vh}
-.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.header-logo{font-family:'Rajdhani',sans-serif;font-size:1.2rem;font-weight:700;color:var(--accent);letter-spacing:1px}
-.user-info{display:flex;align-items:center;gap:8px;cursor:pointer}
-.user-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.9rem;color:#000;overflow:hidden}
-.user-avatar img{width:100%;height:100%;object-fit:cover}
-.user-name{font-size:.85rem;font-weight:600}
-.datetime-bar{background:var(--bg3);padding:6px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);font-size:.78rem;color:var(--text2)}
-#current-time{color:var(--accent);font-weight:600;font-family:'Rajdhani',sans-serif}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);display:flex;z-index:200}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px;gap:4px;cursor:pointer;border:none;background:transparent;color:var(--text2);font-family:'Exo 2',sans-serif;font-size:.65rem;transition:color .2s}
-.nav-btn.active{color:var(--accent)}
-.nav-btn svg{width:22px;height:22px}
-.nav-emergency{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px;gap:4px;cursor:pointer;border:none;background:transparent;font-family:'Exo 2',sans-serif;font-size:.65rem}
-.em-icon{width:34px;height:34px;border-radius:50%;background:var(--danger);display:flex;align-items:center;justify-content:center;animation:pulse-red 2s infinite;margin-top:-8px}
-.nav-emergency.has-alert .em-icon{animation:blink-red .5s infinite}
-@keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.4)}50%{box-shadow:0 0 0 8px rgba(220,38,38,0)}}
-@keyframes blink-red{0%,100%{background:var(--danger);box-shadow:0 0 20px rgba(220,38,38,.8)}50%{background:#ff6b6b;box-shadow:0 0 30px rgba(220,38,38,1)}}
-.nav-emergency span{color:var(--red);font-weight:700;font-size:.65rem}
-.page{display:none;padding:16px;padding-bottom:80px}
-.page.active{display:block}
-.page-title{font-family:'Rajdhani',sans-serif;font-size:1.3rem;font-weight:700;margin-bottom:16px}
-.wells-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
-.well-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 10px;cursor:pointer;transition:all .2s;position:relative;text-align:center}
-.well-card:active{transform:scale(.96)}
-.well-card.soz{border-color:var(--green)}
-.well-card.nosoz{border-color:var(--red)}
-.well-name{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700}
-.well-dot{width:8px;height:8px;border-radius:50%;background:var(--text2);margin:6px auto}
-.well-card.soz .well-dot{background:var(--green);box-shadow:0 0 6px var(--green)}
-.well-card.nosoz .well-dot{background:var(--red);box-shadow:0 0 6px var(--red);animation:blink-red 1s infinite}
-.well-time{font-size:.65rem;color:var(--text2)}
-.well-count{position:absolute;top:6px;right:6px;background:var(--accent);color:#000;border-radius:10px;font-size:.6rem;font-weight:700;padding:1px 5px;font-family:'Rajdhani',sans-serif}
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center}
-.stat-num{font-family:'Rajdhani',sans-serif;font-size:1.6rem;font-weight:700;color:var(--accent)}
-.stat-label{font-size:.65rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
-#well-detail{display:none;position:fixed;inset:0;background:var(--bg);z-index:150;overflow-y:auto;padding:16px;padding-bottom:80px;padding-top:16px}
-.back-btn{display:flex;align-items:center;gap:8px;color:var(--accent);font-size:.9rem;font-weight:600;cursor:pointer;margin-bottom:16px;border:none;background:var(--bg);padding:8px 0;position:sticky;top:0;z-index:10}
-.section-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px}
-.section-title{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
-.status-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.status-btn{background:var(--bg2);border:2px solid var(--border);border-radius:10px;padding:10px 8px;color:var(--text2);font-family:'Exo 2',sans-serif;font-size:.82rem;cursor:pointer;transition:all .2s;text-align:center;font-weight:500}
-.status-btn.sel-soz{border-color:var(--green);background:rgba(34,197,94,.1);color:var(--green);font-weight:700}
-.status-btn.sel-nosoz{border-color:var(--red);background:rgba(239,68,68,.1);color:var(--red);font-weight:700}
-.status-btn:active{transform:scale(.96)}
-.img-upload-area{border:2px dashed var(--border);border-radius:12px;padding:20px;text-align:center;cursor:pointer;margin-bottom:10px}
-.img-upload-area p{color:var(--text2);font-size:.85rem}
-.img-preview{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.img-thumb-wrap{position:relative;width:70px;height:70px}
-.img-thumb{width:70px;height:70px;border-radius:8px;object-fit:cover;border:1px solid var(--border)}
-.remove-img{position:absolute;top:-6px;right:-6px;width:20px;height:20px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:white;cursor:pointer;border:none}
-.timer-display{text-align:center;font-family:'Rajdhani',sans-serif;font-size:2rem;font-weight:700;color:var(--accent);padding:10px;background:var(--bg2);border-radius:12px;letter-spacing:2px;margin-bottom:12px}
-.btn-complete{width:100%;background:linear-gradient(135deg,var(--green),#16a34a);color:white;border:none;border-radius:12px;padding:16px;font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:1px;cursor:pointer}
-.btn-complete:active{opacity:.85}
-.history-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
-.h-time{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;color:var(--accent)}
-.h-duration{font-size:.8rem;color:var(--text2)}
-.h-status{font-size:.78rem;font-weight:600;padding:3px 10px;border-radius:20px}
-.h-status.soz{background:rgba(34,197,94,.15);color:var(--green)}
-.h-status.nosoz{background:rgba(239,68,68,.15);color:var(--red)}
-.emergency-header{background:rgba(220,38,38,.1);border:1px solid var(--red);border-radius:14px;padding:20px;text-align:center;margin-bottom:20px;animation:em-glow 2s infinite}
-@keyframes em-glow{0%,100%{box-shadow:0 0 10px rgba(220,38,38,.3)}50%{box-shadow:0 0 25px rgba(220,38,38,.6)}}
-.emergency-header h2{font-family:'Rajdhani',sans-serif;font-size:1.4rem;font-weight:700;color:var(--red);letter-spacing:1px;margin-bottom:4px}
-.emergency-header p{color:var(--text2);font-size:.85rem}
-.em-item{background:var(--card);border:1px solid rgba(220,38,38,.4);border-radius:12px;padding:14px;margin-bottom:10px}
-.em-well{font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;color:var(--red)}
-.em-desc{font-size:.85rem;color:var(--text);margin:6px 0}
-.em-time{font-size:.75rem;color:var(--text2)}
-.em-operator{font-size:.78rem;color:var(--accent);margin-top:4px}
-.filter-row{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px}
-.filter-btn{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;color:var(--text2);font-size:.8rem;cursor:pointer;white-space:nowrap;font-family:'Exo 2',sans-serif}
-.filter-btn.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:700}
-.settings-section{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:16px}
-.settings-item{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer}
-.settings-item:last-child{border-bottom:none}
-.settings-item:active{background:var(--bg2)}
-.s-label{display:flex;align-items:center;gap:10px;font-size:.9rem}
-.settings-item.danger .s-label{color:var(--red)}
-.profile-section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center;margin-bottom:16px}
-.profile-avatar-big{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.8rem;color:#000;overflow:hidden;cursor:pointer;border:3px solid var(--accent);position:relative}
-.profile-avatar-big img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:50%}
-.delete-photo-btn{background:rgba(239,68,68,.15);border:1px solid var(--red);color:var(--red);border-radius:8px;padding:6px 16px;font-size:.8rem;cursor:pointer;margin-top:8px;font-family:'Exo 2',sans-serif;display:none}
-.delete-photo-btn.visible{display:inline-block}
-.well-obxod{font-size:.62rem;color:var(--accent);margin-top:3px;font-weight:700;background:rgba(245,158,11,.1);border-radius:6px;padding:1px 4px;display:inline-block}
-.profile-name{font-family:'Rajdhani',sans-serif;font-size:1.2rem;font-weight:700}
-.profile-email{font-size:.8rem;color:var(--text2);margin-top:4px}
-.loading{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--text2);font-size:.9rem;gap:10px}
-.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 20px;font-size:.85rem;z-index:300;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
-.toast.show{opacity:1}
-.toast.success{border-color:var(--green);color:var(--green)}
-.toast.error{border-color:var(--red);color:var(--red)}
-.empty-state{text-align:center;padding:40px 20px;color:var(--text2);font-size:.9rem}
-.empty-icon{font-size:2.5rem;margin-bottom:10px}
-textarea{resize:none;min-height:80px}
-.well-detail-header{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px}
-.well-detail-title{font-family:'Rajdhani',sans-serif;font-size:1.6rem;font-weight:700;color:var(--accent);margin-bottom:4px}
-/* QR Scanner */
-#qr-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:500;flex-direction:column;align-items:center;justify-content:center;padding:20px}
-#qr-modal.open{display:flex}
-#qr-video-wrap{position:relative;width:100%;max-width:340px;border-radius:16px;overflow:hidden;border:3px solid var(--accent);background:#000}
-#qr-video{width:100%;display:block}
-.qr-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
-.qr-frame{width:200px;height:200px;border:3px solid var(--accent);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.5);animation:qr-scan 2s infinite}
-@keyframes qr-scan{0%,100%{border-color:var(--accent)}50%{border-color:var(--green)}}
-.qr-scan-line{position:absolute;width:180px;height:3px;background:linear-gradient(90deg,transparent,var(--accent),transparent);animation:scan-move 1.5s infinite}
-@keyframes scan-move{0%{top:calc(50% - 90px)}100%{top:calc(50% + 90px)}}
-#qr-modal h3{font-family:'Rajdhani',sans-serif;font-size:1.2rem;color:var(--text);margin-bottom:16px;text-align:center}
-#qr-cancel-btn{margin-top:20px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);border-radius:10px;padding:12px 32px;font-family:'Exo 2',sans-serif;font-size:.9rem;cursor:pointer}
-/* Timer states */
-.timer-display{text-align:center;font-family:'Rajdhani',sans-serif;font-size:2.4rem;font-weight:700;color:var(--text2);padding:14px;background:var(--bg2);border-radius:12px;letter-spacing:2px;margin-bottom:4px}
-.timer-display.running{color:var(--accent)}
-.timer-display.done{color:var(--green)}
-.timer-display.incomplete{color:var(--red)}
-.timer-label{text-align:center;font-size:.75rem;color:var(--text2);margin-bottom:12px;letter-spacing:1px;text-transform:uppercase}
-.qr-state-card{background:var(--bg2);border:2px dashed var(--border);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:4px}
-.qr-state-card:active{opacity:.8;transform:scale(.98)}
-.qr-state-card.active-scan{border-color:var(--accent);background:rgba(245,158,11,.05)}
-.qr-state-card.done-scan{border-color:var(--green);background:rgba(34,197,94,.05);cursor:default}
-.qr-state-icon{font-size:2rem;margin-bottom:6px}
-.qr-state-title{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;margin-bottom:4px}
-.qr-state-sub{font-size:.78rem;color:var(--text2)}
-.warn-banner{background:rgba(239,68,68,.12);border:1px solid var(--red);border-radius:10px;padding:10px 14px;font-size:.82rem;color:var(--red);text-align:center;margin-bottom:12px;display:none}
-.warn-banner.show{display:block}
-.btn-complete{width:100%;background:linear-gradient(135deg,var(--green),#16a34a);color:white;border:none;border-radius:12px;padding:16px;font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:1px;cursor:pointer;transition:opacity .2s}
-.btn-complete:disabled{background:var(--bg3);color:var(--text2);cursor:not-allowed;border:2px dashed var(--border)}
-.btn-complete:active:not(:disabled){opacity:.85}
-.incomplete-badge{display:inline-block;background:rgba(239,68,68,.15);color:var(--red);border-radius:6px;padding:2px 8px;font-size:.7rem;font-weight:700;margin-left:6px}
-
-/* Pump Jack Animation */
-.pumpjack-wrap{display:flex;flex-direction:column;align-items:center;gap:6px}
-.pumpjack-svg{width:64px;height:64px}
-.pumpjack-svg.small{width:32px;height:32px}
-@keyframes beam-rock{0%,100%{transform-origin:60px 36px;transform:rotate(-12deg)}50%{transform-origin:60px 36px;transform:rotate(10deg)}}
-@keyframes rod-move{0%,100%{transform:translateY(-6px)}50%{transform:translateY(6px)}}
-@keyframes crank-spin{0%{transform-origin:82px 72px;transform:rotate(0deg)}100%{transform-origin:82px 72px;transform:rotate(360deg)}}
-@keyframes oil-drip{0%,75%{opacity:0;transform:translateY(0)}85%{opacity:1}100%{opacity:0;transform:translateY(10px)}}
-.beam{animation:beam-rock 1.4s ease-in-out infinite}
-.pump-rod{animation:rod-move 1.4s ease-in-out infinite}
-.crank{animation:crank-spin 1.4s linear infinite}
-.oil-drop{animation:oil-drip 1.4s ease-in infinite}
+:root{--bg:#0a0f1e;--bg2:#0f1628;--bg3:#151d35;--card:#111827;--border:#1e2d4a;--accent:#f59e0b;--accent2:#fb923c;--green:#22c55e;--red:#ef4444;--blue:#3b82f6;--text:#e2e8f0;--text2:#94a3b8;--glow:rgba(245,158,11,0.2)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh;display:flex;flex-direction:column}
+.cyber-grid{position:fixed;top:0;left:0;width:100vw;height:100vh;background-image:linear-gradient(rgba(30,45,74,0.1) 1px,transparent 1px),linear-gradient(90deg,rgba(30,45,74,0.1) 1px,transparent 1px);background-size:20px 20px;pointer-events:none;z-index:0}
+header{background:linear-gradient(to bottom,var(--bg2),var(--bg));padding:15px 20px;display:flex;justify-content:between;align-items:center;border-bottom:1px solid var(--border);position:relative;z-index:10;box-shadow:0 4px 20px rgba(0,0,0,0.5)}
+.logo-area{display:flex;align-items:center;gap:10px}
+.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px var(--glow)}
+.logo-icon svg{width:18px;height:18px;fill:#000}
+h1{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:linear-gradient(to right,#fff,var(--text2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header-actions{display:flex;align-items:center;gap:12px}
+.btn-icon{width:38px;height:38px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--text);cursor:pointer;transition:all 0.2s}
+.btn-icon:active{transform:scale(0.9);border-color:var(--accent)}
+.btn-icon.active{color:var(--red);border-color:var(--red);box-shadow:0 0 10px rgba(239,68,68,0.3);animation:pulse-border 1.5s infinite}
+@keyframes pulse-border{0%,100%{border-color:var(--red)}50%{border-color:transparent}}
+main{flex:1;position:relative;overflow:hidden;z-index:5}
+.screen{position:absolute;top:0;left:0;width:100%;height:100%;display:none;flex-direction:column;padding:15px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.screen.active{display:flex}
+#auth-screen{background:var(--bg);justify-content:center;align-items:center;z-index:100}
+.auth-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:30px 25px;width:100%;max-width:360px;box-shadow:0 10px 30px rgba(0,0,0,0.7);position:relative;overflow:hidden}
+.auth-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.auth-title{font-family:'Rajdhani',sans-serif;font-size:24px;text-align:center;margin-bottom:25px;text-transform:uppercase;letter-spacing:1px}
+.input-group{margin-bottom:18px;position:relative}
+.input-group label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;text-transform:uppercase}
+.input-group input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 15px;color:#fff;font-family:inherit;font-size:15px;transition:all 0.3s}
+.input-group input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 10px var(--glow)}
+.pass-toggle{position:absolute;right:15px;top:38px;color:var(--text2);cursor:pointer}
+.btn-primary{width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border:none;border-radius:10px;padding:14px;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;transition:all 0.2s;box-shadow:0 5px 15px rgba(245,158,11,0.3);text-transform:uppercase;letter-spacing:0.5px}
+.btn-primary:active{transform:scale(0.98);opacity:0.9}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:15px}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 8px;text-align:center;position:relative}
+.stat-val{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700}
+.stat-lbl{font-size:11px;color:var(--text2);margin-top:2px}
+.stat-box.total .stat-val{color:var(--blue)}
+.stat-box.soz .stat-val{color:var(--green)}
+.stat-box.nosoz .stat-val{color:var(--red)}
+.obxod-panel{background:linear-gradient(135deg,var(--bg3),var(--bg2));border:1px solid var(--border);border-radius:15px;padding:15px;margin-bottom:15px;display:flex;justify-content:between;align-items:center}
+.obxod-info h3{font-size:15px;margin-bottom:4px}
+.obxod-info p{font-size:12px;color:var(--text2)}
+.timer-badge{font-family:'Rajdhani',sans-serif;background:rgba(245,158,11,0.1);border:1px solid var(--accent);color:var(--accent);padding:6px 12px;border-radius:20px;font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px}
+.pulse-dot{width:8px;height:8px;background:var(--accent);border-radius:50%;animation:pulse-g 1s infinite}
+@keyframes pulse-g{0%{transform:scale(0.8);opacity:0.5}50%{transform:scale(1.2);opacity:1}100%{transform:scale(0.8);opacity:0.5}}
+.section-title{font-family:'Rajdhani',sans-serif;font-size:16px;text-transform:uppercase;color:var(--text2);letter-spacing:0.5px;margin:5px 0 12px 2px;display:flex;justify-content:between;align-items:center}
+.wells-list{display:flex;flex-direction:column;gap:12px;padding-bottom:80px}
+.well-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 15px;display:flex;align-items:center;justify-content:between;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
+.well-card:active{transform:scale(0.98);background:var(--bg3)}
+.well-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px}
+.well-card.soz::before{background:var(--green)}
+.well-card.nosoz::before{background:var(--red)}
+.well-meta{display:flex;align-items:center;gap:12px}
+.well-avatar{width:40px;height:40px;background:var(--bg2);border-radius:10px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center}
+.well-avatar svg{width:22px;height:22px}
+.well-card.soz .well-avatar svg{fill:var(--green)}
+.well-card.nosoz .well-avatar svg{fill:var(--red)}
+.well-name{font-size:15px;font-weight:600;margin-bottom:2px}
+.well-time{font-size:12px;color:var(--text2)}
+.well-status-indicator{display:flex;align-items:center;gap:8px}
+.status-badge{font-size:11px;text-transform:uppercase;padding:3px 8px;border-radius:6px;font-weight:600}
+.well-card.soz .status-badge{background:rgba(34,197,94,0.1);color:var(--green)}
+.well-card.nosoz .status-badge{background:rgba(239,68,68,0.1);color:var(--red);animation:blink-bg 1s infinite alternate}
+@keyframes blink-bg{0%{background:rgba(239,68,68,0.1)}100%{background:rgba(239,68,68,0.35)}}
+.indicator-light{width:10px;height:10px;border-radius:50%}
+.well-card.soz .indicator-light{background:var(--green);box-shadow:0 0 8px var(--green)}
+.well-card.nosoz .indicator-light{background:var(--red);box-shadow:0 0 10px var(--red);animation:blink-l 0.5s infinite alternate}
+@keyframes blink-l{0%{opacity:0.3}100%{opacity:1}}
+nav.bottom-nav{position:fixed;bottom:0;left:0;width:100vw;background:var(--bg2);border-top:1px solid var(--border);display:flex;height:65px;z-index:20;box-shadow:0 -5px 20px rgba(0,0,0,0.4)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text2);cursor:pointer;gap:4px;transition:all 0.2s}
+.nav-item svg{width:20px;height:20px;fill:currentColor}
+.nav-item span{font-size:11px;font-weight:500}
+.nav-item.active{color:var(--accent)}
+.nav-item.scan-btn{position:relative;top:-15px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border-radius:50%;width:60px;height:60px;flex:none;box-shadow:0 5px 15px var(--glow);border:4px solid var(--bg)}
+.nav-item.scan-btn svg{width:24px;height:24px}
+#well-detail{background:var(--bg);z-index:30}
+.detail-header{display:flex;align-items:center;gap:15px;margin-bottom:20px}
+.detail-title h2{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700}
+.detail-title p{font-size:13px;color:var(--text2)}
+.pump-animation-box{background:var(--card);border:1px solid var(--border);border-radius:15px;height:140px;margin-bottom:15px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.pump-svg{width:220px;height:120px}
+.param-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:15px}
+.param-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px}
+.param-icon{width:36px;height:36px;background:var(--bg2);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--accent)}
+.param-icon svg{width:18px;height:18px;fill:currentColor}
+.param-info p{font-size:11px;color:var(--text2);text-transform:uppercase}
+.param-info h4{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700}
+.report-section{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:15px;margin-bottom:20px}
+.report-section h3{font-size:14px;margin-bottom:12px;text-transform:uppercase;color:var(--text2);font-family:'Rajdhani',sans-serif}
+.status-selector{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.status-opt{border:1px solid var(--border);background:var(--bg2);border-radius:10px;padding:12px;text-align:center;font-weight:600;font-size:14px;cursor:pointer;transition:all 0.2s}
+.status-opt.soz-opt.active{background:rgba(34,197,94,0.15);border-color:var(--green);color:var(--green)}
+.status-opt.nosoz-opt.active{background:rgba(239,68,68,0.15);border-color:var(--red);color:var(--red)}
+textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px;color:#fff;font-family:inherit;font-size:14px;resize:none;height:70px;margin-bottom:12px}
+textarea:focus{outline:none;border-color:var(--accent)}
+.photo-upload-bar{display:flex;gap:10px;align-items:center;margin-bottom:15px}
+.btn-secondary{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 15px;font-size:13px;font-family:inherit;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px}
+.btn-secondary svg{width:16px;height:16px;fill:currentColor}
+#photo-preview{width:50px;height:50px;border-radius:8px;object-fit:cover;border:1px solid var(--border);display:none}
+.toast-container{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:1000;display:flex;flex-direction:column;gap:8px;width:90%;max-width:320px;pointer-events:none}
+.toast{background:var(--card);border:1px solid var(--border);padding:12px 15px;border-radius:10px;color:#fff;font-size:13px;font-weight:500;box-shadow:0 5px 15px rgba(0,0,0,0.5);display:flex;align-items:center;gap:10px;animation:slide-down 0.3s ease;pointer-events:auto}
+@keyframes slide-down{from{transform:translateY(-20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.toast.success{border-left:4px solid var(--green)}
+.toast.error{border-left:4px solid var(--red)}
+.toast.info{border-left:4px solid var(--blue)}
+.modal-overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(5,7,14,0.85);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.active{display:flex}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;width:100%;max-width:320px;text-align:center;position:relative}
+.modal-box h3{font-family:'Rajdhani',sans-serif;font-size:18px;margin-bottom:15px;text-transform:uppercase}
+.scanner-window{width:100%;aspect-ratio:1;background:#000;border-radius:12px;position:relative;overflow:hidden;border:1px solid var(--border)}
+.scanner-laser{position:absolute;top:0;left:0;width:100%;height:3px;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:laser-scan 2s linear infinite}
+@keyframes laser-scan{0%{top:0%}50%{top:100%}100%{top:0%}}
+.scanner-corners{position:absolute;inset:20px;border:2px dashed rgba(245,158,11,0.4);border-radius:8px}
+.close-modal{position:absolute;top:15px;right:15px;color:var(--text2);cursor:pointer}
+.profile-card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:20px;text-align:center;margin-bottom:15px}
+.avatar-container{position:relative;width:90px;height:90px;margin:0 auto 12px;border-radius:50%;padding:3px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.avatar-img{width:100%;height:100%;border-radius:50%;object-fit:cover;background:var(--bg2);border:3px solid var(--card)}
+.avatar-edit-btn{position:absolute;bottom:0;right:0;width:28px;height:28px;background:var(--bg3);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--accent);cursor:pointer}
+.profile-name{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700}
+.profile-role{font-size:12px;color:var(--text2);margin-bottom:15px}
+.theme-section{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:15px}
+.theme-section h3{font-size:14px;font-family:'Rajdhani',sans-serif;text-transform:uppercase;margin-bottom:12px;color:var(--text2)}
+.theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.theme-dot{height:45px;border-radius:10px;cursor:pointer;transition:transform 0.2s;position:relative;border:3px solid transparent}
+.theme-dot:active{transform:scale(0.9)}
 </style>
 </head>
 <body>
+<div class="cyber-grid"></div>
 
-<div id="auth-screen">
-  <div class="auth-logo">
-    <div class="pumpjack-wrap">
-      <svg class="pumpjack-svg" viewBox="0 0 120 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+<header>
+  <div class="logo-area">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2zm0 3.99L19.53 19H4.47L12 5.99zM13 16h-2v2h2v-2zm0-6h-2v4h2v-4z"/></svg>
+    </div>
+    <div>
+      <h1>Nazorat Panel</h1>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="btn-icon" id="siren-toggle-btn" onclick="toggleSirenMute()" title="Sirenani o'chirish">
+      <svg id="siren-icon" viewBox="0 0 24 24" style="width:20px;height:20px;fill:currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg>
+    </button>
+    <button class="btn-icon" onclick="logout()" title="Chiqish">
+      <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:currentColor"><path d="M16 13v-2H10V9h6V7l4 4-4 4zm-2 5H4V6h10v2h2V6c0-1.11-.89-2-2-2H4c-1.1 0-2 .89-2 2v12c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-2h-2v2z"/></svg>
+    </button>
+  </div>
+</header>
+
+<main>
+  <!-- AUTH SCREEN -->
+  <div class="screen active" id="auth-screen">
+    <div class="auth-card">
+      <div class="auth-title">Tizimga Kirish</div>
+      <div class="input-group">
+        <label>Operator Email</label>
+        <input type="email" id="auth-email" value="operator@neft.uz">
+      </div>
+      <div class="input-group">
+        <label>Parol</label>
+        <input type="password" id="auth-pass" value="123456">
+        <span class="pass-toggle" onclick="togglePassView()">👁</span>
+      </div>
+      <button class="btn-primary" onclick="handleAuth()">Kirish</button>
+    </div>
+  </div>
+
+  <!-- PAGE: HOME -->
+  <div class="screen" id="page-home">
+    <div class="stats-grid">
+      <div class="stat-box total">
+        <div class="stat-val" id="stat-total">0</div>
+        <div class="stat-lbl">Jami Quduq</div>
+      </div>
+      <div class="stat-box soz">
+        <div class="stat-val" id="stat-soz">0</div>
+        <div class="stat-lbl">Soz</div>
+      </div>
+      <div class="stat-box nosoz">
+        <div class="stat-val" id="stat-nosoz">0</div>
+        <div class="stat-lbl">Avariya</div>
+      </div>
+    </div>
+
+    <div class="obxod-panel">
+      <div class="obxod-info">
+        <h3 id="obxod-title">Bugungi Obxod</h3>
+        <p id="obxod-status">Aktiv holatda emas</p>
+      </div>
+      <div class="timer-badge" id="obxod-timer-badge" style="display:none">
+        <div class="pulse-dot"></div>
+        <span id="obxod-time-val">00:00</span>
+      </div>
+      <button class="btn-primary" id="obxod-btn" onclick="toggleObxod()" style="width:auto;padding:10px 15px;font-size:13px">Boshlash</button>
+    </div>
+
+    <div class="section-title">
+      <span>Quduqlar Ro'yxati</span>
+      <span style="font-size:12px;color:var(--accent)" id="gps-indicator">GPS Himoya: Faol</span>
+    </div>
+
+    <div class="wells-list" id="wells-container">
+      <!-- Dinamik yuklanadi -->
+    </div>
+  </div>
+
+  <!-- PAGE: PROFILE -->
+  <div class="screen" id="page-profile">
+    <div class="profile-card">
+      <div class="avatar-container">
+        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394a3b8'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" class="avatar-img" id="user-avatar-img">
+        <label class="avatar-edit-btn" for="avatar-input">
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'/></svg>
+        </label>
+        <input type="file" id="avatar-input" accept="image/*" style="display:none" onchange="uploadAvatar(this)">
+      </div>
+      <div class="profile-name">Karimov Muzaffar</div>
+      <div class="profile-role">Katta Operator (ID: 4092)</div>
+    </div>
+
+    <div class="theme-section">
+      <h3>Interfeys uslubi (Mavzu)</h3>
+      <div class="theme-grid">
+        <div class="theme-dot" data-bg="#0a0f1e" data-bg2="#0f1628" data-bg3="#151d35" data-card="#111827" style="background:#0a0f1e;box-shadow:inset 0 0 0 1px #1e2d4a"></div>
+        <div class="theme-dot" data-bg="#070708" data-bg2="#121214" data-bg3="#1a1a1e" data-card="#16161a" style="background:#070708;box-shadow:inset 0 0 0 1px #2a2a30"></div>
+        <div class="theme-dot" data-bg="#051414" data-bg2="#0a2020" data-bg3="#0f2e2e" data-card="#0b2424" style="background:#051414;box-shadow:inset 0 0 0 1px #143d3d"></div>
+        <div class="theme-dot" data-bg="#1a0b05" data-bg2="#26120a" data-bg3="#361b10" data-card="#2b150c" style="background:#1a0b05;box-shadow:inset 0 0 0 1px #422011"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAILS MODAL PANEL (FULL SCREEN SLIDE) -->
+  <div class="screen" id="well-detail">
+    <div class="detail-header">
+      <button class="btn-icon" onclick="closeWellDetail()">
+        <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      </button>
+      <div class="detail-title">
+        <h2 id="det-name">Quduq nomi</h2>
+        <p id="det-type">Turi: Neft/Gaz</p>
+      </div>
+    </div>
+
+    <div class="pump-animation-box">
+      <!-- JONLI ANIMATSIYA SVG (PUMP JACK) -->
+      <svg class="pump-svg" viewBox="0 0 220 120" xmlns="http://www.w3.org/2000/svg">
         <!-- Zamin -->
-        <rect x="5" y="95" width="110" height="5" rx="2" fill="#334155"/>
-        <rect x="0" y="100" width="120" height="10" rx="2" fill="#1e293b"/>
-
-        <!-- Baza (pastki blok) -->
-        <rect x="30" y="82" width="60" height="13" rx="2" fill="#334155" stroke="#475569" stroke-width="1"/>
-        <rect x="38" y="78" width="44" height="6" rx="1" fill="#3f5068"/>
-
-        <!-- A-rama (ikki yonbosh ustun) -->
-        <line x1="52" y1="82" x2="44" y2="38" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
-        <line x1="68" y1="82" x2="76" y2="38" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
-        <!-- A-rama ko'ndalang -->
-        <line x1="47" y1="62" x2="73" y2="62" stroke="#64748b" stroke-width="2.5" stroke-linecap="round"/>
-        <line x1="50" y1="50" x2="70" y2="50" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
-
-        <!-- Markaziy o'q nuqtasi -->
-        <circle cx="60" cy="36" r="5" fill="#475569" stroke="#f59e0b" stroke-width="1.5"/>
-
-        <!-- BEAM (balansir) - uzoq old qism + kalta orqa qism -->
-        <g class="beam">
-          <!-- Asosiy beam -->
-          <rect x="8" y="32" width="86" height="8" rx="4" fill="#f59e0b"/>
-          <!-- Old tomon "tumshug'" (egri shakl) -->
-          <path d="M8 36 Q4 36 4 40 Q4 46 10 48 L18 48 L18 40 L8 40 Z" fill="#e8920a"/>
-          <!-- Orqa og'irlik (counterweight) - katta va og'ir ko'rinish -->
-          <rect x="88" y="26" width="22" height="20" rx="4" fill="#475569" stroke="#64748b" stroke-width="1.5"/>
-          <rect x="90" y="28" width="18" height="16" rx="3" fill="#3f5068"/>
-          <!-- Og'irlik detallari -->
-          <line x1="92" y1="33" x2="106" y2="33" stroke="#64748b" stroke-width="1"/>
-          <line x1="92" y1="37" x2="106" y2="37" stroke="#64748b" stroke-width="1"/>
-          <line x1="92" y1="41" x2="106" y2="41" stroke="#64748b" stroke-width="1"/>
+        <line x1="10" y1="110" x2="210" y2="110" stroke="#1e2d4a" stroke-width="3" />
+        <!-- Tayanch ustun -->
+        <polygon points="120,110 140,50 160,110" fill="none" stroke="#2c3e50" stroke-width="3" />
+        <!-- Balansir -->
+        <g id="pump-beam" style="transform-origin: 140px 50px;">
+          <line x1="70" y1="50" x2="190" y2="50" stroke="var(--text)" stroke-width="5" />
+          <!-- Qachalka boshi -->
+          <path d="M 60 25 Q 70 50 60 75 Z" fill="var(--accent)" />
+          <!-- Orqa yuk -->
+          <circle cx="190" cy="50" r="10" fill="#7f8c8d" />
         </g>
-
-        <!-- Nasos shtoki (vertikal) -->
-        <g class="pump-rod">
-          <line x1="13" y1="48" x2="13" y2="82" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
-          <!-- Stuffing box -->
-          <rect x="8" y="78" width="10" height="6" rx="2" fill="#475569"/>
-        </g>
-
-        <!-- Pitman arm + krank -->
-        <g class="crank">
-          <!-- Krank diski -->
-          <circle cx="82" cy="72" r="11" fill="#1e293b" stroke="#475569" stroke-width="2"/>
-          <circle cx="82" cy="72" r="7" fill="#263548"/>
-          <!-- Krank qo'li -->
-          <line x1="82" y1="72" x2="82" y2="61" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="82" cy="61" r="3" fill="#f59e0b"/>
-        </g>
-
-        <!-- Motor bloki -->
-        <rect x="70" y="78" width="30" height="14" rx="2" fill="#263548" stroke="#334155" stroke-width="1"/>
-        <rect x="73" y="80" width="10" height="10" rx="1" fill="#1e293b"/>
-        <rect x="86" y="80" width="10" height="10" rx="1" fill="#1e293b"/>
-
-        <!-- Moy tomchisi -->
-        <ellipse class="oil-drop" cx="13" cy="90" rx="2" ry="3" fill="#f59e0b" opacity="0"/>
+        <!-- Shtok -->
+        <line id="pump-rod" x1="63" y1="52" x2="63" y2="110" stroke="#bdc3c7" stroke-width="2" />
+        <!-- Neft quvuri/armatura -->
+        <rect x="53" y="95" width="20" height="15" fill="none" stroke="#34495e" stroke-width="2" />
+        <!-- Moy tomchisi animatsiyasi -->
+        <path id="oil-drop" d="M63,98 C60,103 66,103 63,98 Z" fill="var(--accent2)" style="display:none;" />
       </svg>
-      <div style="font-family:'Rajdhani',sans-serif;font-size:2rem;font-weight:700;color:var(--accent);letter-spacing:2px">QUDUQLAR</div>
     </div>
-  </div>
-  <div class="auth-sub">Nazorat Tizimi</div>
-  <div class="auth-card">
-    <h2>Tizimga kirish</h2>
-    <div class="form-group">
-      <label>Email</label>
-      <input type="email" id="login-email" placeholder="email@example.com">
-    </div>
-    <div class="form-group">
-      <label>Parol</label>
-      <div style="position:relative">
-        <input type="password" id="login-password" placeholder="••••••••" style="padding-right:44px">
-        <button type="button" id="toggle-password" onclick="togglePassword()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:transparent;border:none;cursor:pointer;color:var(--text2);font-size:1.1rem;padding:0;line-height:1">👁</button>
+
+    <div class="param-grid">
+      <div class="param-card">
+        <div class="param-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+        </div>
+        <div class="param-info">
+          <p>Tezlik (ayl/m)</p>
+          <h4 id="det-speed">0.0</h4>
+        </div>
+      </div>
+      <div class="param-card">
+        <div class="param-icon">
+          <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"/></svg>
+        </div>
+        <div class="param-info">
+          <p>Bosim (Bar)</p>
+          <h4 id="det-press">0.0</h4>
+        </div>
+      </div>
+      <div class="param-card">
+        <div class="param-icon">
+          <svg viewBox="0 0 24 24"><path d="M7 14c0-2.76 2.24-5 5-5s5 2.24 5 5c0 2.88-2.88 6-5 6s-5-3.12-5-6zm5-11c-4.14 0-7.5 3.36-7.5 7.5 0 2.21.9 4.14 2.34 5.57l1.42-1.42C7.38 13.78 7 12.19 7 10.5c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.69-.38 3.28-1.26 4.15l1.42 1.42c1.44-1.43 2.34-3.36 2.34-5.57C19.5 6.36 16.14 3 12 3z"/></svg>
+        </div>
+        <div class="param-info">
+          <p>Harorat (°C)</p>
+          <h4 id="det-temp">0.0</h4>
+        </div>
+      </div>
+      <div class="param-card">
+        <div class="param-icon">
+          <svg viewBox="0 0 24 24"><path d="M2 12c0 5.52 4.48 10 10 10s10-4.48 10-10S17.52 2 12 2 2 6.48 2 12zm10-8c4.41 0 8 3.59 8 8s-3.59 8-8 8-8-3.59-8-8 3.59-8 8-8zm-1 4h2v5h-2V8zm0 7h2v2h-2v-2z"/></svg>
+        </div>
+        <div class="param-info">
+          <p>Tok kuchi (A)</p>
+          <h4 id="det-amp">0.0</h4>
+        </div>
       </div>
     </div>
-    <!-- Blok hisobi ko'rsatgich -->
-    <div id="lockout-banner" style="display:none;background:rgba(220,38,38,.12);border:1px solid var(--red);border-radius:10px;padding:10px 14px;font-size:.82rem;color:var(--red);text-align:center;margin-bottom:10px"></div>
-    <button class="btn-primary" id="login-btn">KIRISH</button>
-    <div class="auth-error" id="auth-error"></div>
-    <div id="auth-success" style="color:#22c55e;font-size:.85rem;margin-top:12px;text-align:center;display:none"></div>
-    <div style="text-align:center;margin-top:14px">
-      <span id="forgot-btn" style="color:#f59e0b;font-size:.82rem;cursor:pointer;text-decoration:underline;">Parolni unutdingizmi?</span>
+
+    <div class="report-section">
+      <h3>Texnik ko'rik hisoboti</h3>
+      <div class="status-selector">
+        <div class="status-opt soz-opt" id="opt-soz" onclick="setReportStatus('soz')">SOZ</div>
+        <div class="status-opt nosoz-opt" id="opt-nosoz" onclick="setReportStatus('nosoz')">NOSOZ</div>
+      </div>
+      <textarea id="report-comment" placeholder="Izoh yoki nuqsonlarni kiriting..."></textarea>
+      
+      <div class="photo-upload-bar">
+        <button class="btn-secondary" onclick="document.getElementById('report-photo').click()">
+          <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+          Foto yuklash
+        </button>
+        <input type="file" id="report-photo" accept="image/*" style="display:none" onchange="previewReportPhoto(this)">
+        <img id="photo-preview" src="">
+      </div>
+
+      <button class="btn-primary" onclick="sendReport()" style="margin-top:5px">Tasdiqlash va GPS Yuborish</button>
+    </div>
+  </div>
+</main>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav" id="main-nav" style="display:none">
+  <div class="nav-item active" onclick="switchTab('home', this)">
+    <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    <span>Asosiy</span>
+  </div>
+  <div class="nav-item scan-btn" onclick="openQrScanner()" title="QR Skaner">
+    <svg viewBox="0 0 24 24"><path d="M4 4h6v6H4V4zm2 2v2h2V6H6zm0 7h4v6H4v-6zm2 2v2h2v-2H8zm6-11h6v6h-6V4zm2 2v2h2V6h-2zm0 7h2v2h-2v-2zm2 2h2v2h-2v-2zm-2 2h2v2h-2v-2zm2-2h2v-2h-2v2zm0-4h2V9h-2v2zm-2 0h2V9h-2v2z"/></svg>
+  </div>
+  <div class="nav-item" onclick="switchTab('profile', this)">
+    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+    <span>Profil</span>
+  </div>
+</nav>
+
+<!-- MODAL: QR SCANNER SIMULATOR -->
+<div class="modal-overlay" id="qr-modal">
+  <div class="modal-box">
+    <div class="close-modal" onclick="closeQrScanner()">✕</div>
+    <h3>QR Kod Skaner</h3>
+    <div class="scanner-window">
+      <div class="scanner-laser"></div>
+      <div class="scanner-corners"></div>
+    </div>
+    <p style="font-size:12px;color:var(--text2);margin-top:15px;line-height:1.4">Quduq pasportidagi maxsus QR kodni kamera markaziga olib keling.</p>
+    <div style="margin-top:15px;display:flex;flex-direction:column;gap:8px" id="qr-sim-list">
+      <!-- Динамик тугмалар -->
     </div>
   </div>
 </div>
 
-<div id="app-screen">
-  <div class="header">
-    <div class="header-logo">
-      <div style="display:flex;align-items:center;gap:8px">
-        <svg class="pumpjack-svg small" viewBox="0 0 120 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="5" y="95" width="110" height="5" rx="2" fill="#334155"/>
-          <rect x="0" y="100" width="120" height="10" rx="2" fill="#1e293b"/>
-          <rect x="30" y="82" width="60" height="13" rx="2" fill="#334155" stroke="#475569" stroke-width="1"/>
-          <rect x="38" y="78" width="44" height="6" rx="1" fill="#3f5068"/>
-          <line x1="52" y1="82" x2="44" y2="38" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
-          <line x1="68" y1="82" x2="76" y2="38" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
-          <line x1="47" y1="62" x2="73" y2="62" stroke="#64748b" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="50" y1="50" x2="70" y2="50" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
-          <circle cx="60" cy="36" r="5" fill="#475569" stroke="#f59e0b" stroke-width="1.5"/>
-          <g class="beam">
-            <rect x="8" y="32" width="86" height="8" rx="4" fill="#f59e0b"/>
-            <path d="M8 36 Q4 36 4 40 Q4 46 10 48 L18 48 L18 40 L8 40 Z" fill="#e8920a"/>
-            <rect x="88" y="26" width="22" height="20" rx="4" fill="#475569" stroke="#64748b" stroke-width="1.5"/>
-            <rect x="90" y="28" width="18" height="16" rx="3" fill="#3f5068"/>
-          </g>
-          <g class="pump-rod">
-            <line x1="13" y1="48" x2="13" y2="82" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
-            <rect x="8" y="78" width="10" height="6" rx="2" fill="#475569"/>
-          </g>
-          <g class="crank">
-            <circle cx="82" cy="72" r="11" fill="#1e293b" stroke="#475569" stroke-width="2"/>
-            <circle cx="82" cy="72" r="7" fill="#263548"/>
-            <line x1="82" y1="72" x2="82" y2="61" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
-            <circle cx="82" cy="61" r="3" fill="#f59e0b"/>
-          </g>
-          <rect x="70" y="78" width="30" height="14" rx="2" fill="#263548" stroke="#334155" stroke-width="1"/>
-        </svg>
-        NAZORAT
-      </div>
-    </div>
-    <div class="user-info" id="go-settings">
-      <div class="user-avatar" id="header-avatar">A</div>
-      <div class="user-name" id="header-name">Operator</div>
-    </div>
-    <button id="sound-toggle-btn" onclick="toggleEmergencySound()" title="Avariya ovozi" style="background:transparent;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:1rem;margin-left:6px" aria-label="Ovoz">🔔</button>
-  </div>
-  <div class="datetime-bar">
-    <span id="current-date">--</span>
-    <span id="current-time">--:--:--</span>
-  </div>
+<div class="toast-container" id="toast-box"></div>
 
-  <div class="page active" id="page-home">
-    <div class="page-title">Quduqlar holati</div>
-    <div class="stats-row">
-      <div class="stat-card"><div class="stat-num" id="stat-total">10</div><div class="stat-label">Jami</div></div>
-      <div class="stat-card"><div class="stat-num" style="color:var(--green)" id="stat-soz">0</div><div class="stat-label">Soz</div></div>
-      <div class="stat-card"><div class="stat-num" style="color:var(--red)" id="stat-nosoz">0</div><div class="stat-label">Nosoz</div></div>
-    </div>
-    <!-- Bugungi obxod umumiy statistikasi (klik qilsa ro'yxat chiqadi) -->
-    <div id="today-obxod-panel" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:border-color .2s" onclick="openObxodModal()">
-      <div style="display:flex;align-items:center;gap:8px">
-        <span style="font-size:1.2rem">🔄</span>
-        <div>
-          <div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Bugungi obxod</div>
-          <div id="today-obxod-summary" style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;color:var(--accent)">Yuklanmoqda...</div>
-        </div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Jami vaqt</div>
-        <div id="today-obxod-time" style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;color:var(--green)">--:--</div>
-      </div>
-    </div>
-
-    <!-- Stanok/qachalkalar animatsiyasi + quduqlar tugmasi -->
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="showPage('wells')">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div id="pumpjack-icon">
-          <svg style="width:40px;height:40px" viewBox="0 0 120 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="5" y="95" width="110" height="5" rx="2" fill="#334155"/>
-            <rect x="0" y="100" width="120" height="10" rx="2" fill="#1e293b"/>
-            <rect x="30" y="82" width="60" height="13" rx="2" fill="#334155" stroke="#475569" stroke-width="1"/>
-            <rect x="38" y="78" width="44" height="6" rx="1" fill="#3f5068"/>
-            <line x1="52" y1="82" x2="44" y2="38" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
-            <line x1="68" y1="82" x2="76" y2="38" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
-            <line x1="47" y1="62" x2="73" y2="62" stroke="#64748b" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="50" y1="50" x2="70" y2="50" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="60" cy="36" r="5" fill="#475569" stroke="#f59e0b" stroke-width="1.5"/>
-            <g class="beam">
-              <rect x="8" y="32" width="86" height="8" rx="4" fill="#f59e0b"/>
-              <path d="M8 36 Q4 36 4 40 Q4 46 10 48 L18 48 L18 40 L8 40 Z" fill="#e8920a"/>
-              <rect x="88" y="26" width="22" height="20" rx="4" fill="#475569" stroke="#64748b" stroke-width="1.5"/>
-              <rect x="90" y="28" width="18" height="16" rx="3" fill="#3f5068"/>
-            </g>
-            <g class="pump-rod">
-              <line x1="13" y1="48" x2="13" y2="82" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
-              <rect x="8" y="78" width="10" height="6" rx="2" fill="#475569"/>
-            </g>
-            <g class="crank">
-              <circle cx="82" cy="72" r="11" fill="#1e293b" stroke="#475569" stroke-width="2"/>
-              <circle cx="82" cy="72" r="7" fill="#263548"/>
-              <line x1="82" y1="72" x2="82" y2="61" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
-              <circle cx="82" cy="61" r="3" fill="#f59e0b"/>
-            </g>
-            <rect x="70" y="78" width="30" height="14" rx="2" fill="#263548" stroke="#334155" stroke-width="1"/>
-            <ellipse class="oil-drop" cx="13" cy="90" rx="2" ry="3" fill="#f59e0b" opacity="0"/>
-          </svg>
-        </div>
-        <div>
-          <div style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700">QUDUQLAR</div>
-          <div style="font-size:.75rem;color:var(--text2)" id="wells-btn-sub">Ishlayapti...</div>
-        </div>
-      </div>
-      <span style="color:var(--text2);font-size:1.2rem">›</span>
-    </div>
-
-    <div class="wells-grid" id="wells-grid" style="display:none"></div>
-  </div>
-
-  <!-- Quduqlar ro'yxati sahifasi -->
-  <div class="page" id="page-wells">
-    <div class="page-title" style="display:flex;align-items:center;gap:8px"><svg style="width:28px;height:28px" viewBox="0 0 120 110" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="82" width="60" height="13" rx="2" fill="#334155" stroke="#475569" stroke-width="1"/><line x1="52" y1="82" x2="44" y2="38" stroke="#64748b" stroke-width="4" stroke-linecap="round"/><line x1="68" y1="82" x2="76" y2="38" stroke="#64748b" stroke-width="4" stroke-linecap="round"/><line x1="47" y1="62" x2="73" y2="62" stroke="#64748b" stroke-width="2.5" stroke-linecap="round"/><circle cx="60" cy="36" r="5" fill="#475569" stroke="#f59e0b" stroke-width="1.5"/><g class="beam"><rect x="8" y="32" width="86" height="8" rx="4" fill="#f59e0b"/><rect x="88" y="26" width="22" height="20" rx="4" fill="#475569" stroke="#64748b" stroke-width="1.5"/></g><g class="pump-rod"><line x1="13" y1="48" x2="13" y2="82" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/></g><g class="crank"><circle cx="82" cy="72" r="11" fill="#1e293b" stroke="#475569" stroke-width="2"/><line x1="82" y1="72" x2="82" y2="61" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/><circle cx="82" cy="61" r="3" fill="#f59e0b"/></g></svg> Quduqlar</div>
-    <div class="wells-grid" id="wells-grid-full"></div>
-  </div>
-
-  <div id="well-detail">
-    <button class="back-btn" id="back-btn">← Orqaga</button>
-    <div class="well-detail-header">
-      <div class="well-detail-title" id="wd-title"></div>
-      <div style="color:var(--text2);font-size:.85rem" id="wd-subtitle"></div>
-    </div>
-
-    <!-- QR holat kartochkalari -->
-    <div class="section-card">
-      <div class="section-title">📱 QR Nazorat</div>
-
-      <!-- 1-qadam: Kirish QR -->
-      <div class="qr-state-card" id="qr-enter-card" onclick="startQRScan('enter')">
-        <div class="qr-state-icon">📷</div>
-        <div class="qr-state-title">1. Kirish — QR Skanerlash</div>
-        <div class="qr-state-sub">Quduq yaqinidagi QR kodni skaner qiling</div>
-      </div>
-
-      <!-- Taymер -->
-      <div style="margin:10px 0">
-        <div class="timer-display" id="well-timer">--:--</div>
-        <div class="timer-label" id="timer-label">QR skanerlanishini kuting</div>
-      </div>
-
-      <!-- 2-qadam: Chiqish QR -->
-      <div class="qr-state-card" id="qr-exit-card" style="opacity:.4;pointer-events:none">
-        <div class="qr-state-icon">✅</div>
-        <div class="qr-state-title">2. Chiqish — QR Skanerlash</div>
-        <div class="qr-state-sub">10 daqiqa o'tgach quduqni tark etayotganda skaner qiling</div>
-      </div>
-
-      <div class="warn-banner" id="warn-banner">⚠️ 10 daqiqa tugamadi! Obxod "Tugallanmagan" sifatida saqlanadi va admin xabardor qilinadi.</div>
-    </div>
-
-    <div class="section-card">
-      <div class="section-title">📊 Holat</div>
-      <div class="status-grid" id="status-grid">
-        <button class="status-btn" data-status="Soz">✅ Soz</button>
-        <button class="status-btn" data-status="Nosoz" id="nosoz-main-btn" onclick="toggleNosozMenu()">❌ Nosoz</button>
-      </div>
-      <!-- Nosoz sabablari -->
-      <div id="nosoz-menu" style="display:none;margin-top:10px">
-        <div style="font-size:.78rem;color:var(--text2);margin-bottom:8px;text-align:center">Nosozlik sababini tanlang:</div>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <button class="status-btn nosoz-reason" data-status="Nosoz — Sal'nik almashtirilishi kerak">🔧 Sal'nik almashtirilishi kerak</button>
-          <button class="status-btn nosoz-reason" data-status="Nosoz — Remen' uzilgan yoki yaroqsiz">⚡ Remen' uzilgan yoki yaroqsiz</button>
-          <button class="status-btn nosoz-reason" data-status="Nosoz — Nijniy golovka/palts/podshipnikdan ovoz yoki stujka">🔩 Nijniy golovka/palts/podshipnikdan ovoz yoki stujka</button>
-          <button class="status-btn nosoz-reason" data-status="Nosoz — Elektrodvigatilda shovqin">⚙️ Elektrodvigatilda shovqin</button>
-          <button class="status-btn nosoz-reason" data-status="Nosoz — Kanat uzilgan yoki stakanidan sidirilgan">🪢 Kanat uzilgan yoki stakanidan sidirilgan</button>
-          <button class="status-btn nosoz-reason" data-status="Nosoz — Rama singan yoki yorilgan">🏗️ Rama singan yoki yorilgan</button>
-          <button class="status-btn nosoz-reason" data-status="Nosoz — Elektroschit zashchitniki nosoz">⚡ Elektroschit zashchitniki nosoz</button>
-          <button class="status-btn nosoz-reason" data-status="Nosoz — Krivashp shponkasi chiqib ketgan">🔑 Krivaship shponkasi chiqib ketgan</button>
-          <button class="status-btn nosoz-reason" data-status="Nosoz — Val shesternyalari yeyilib ketgan">⚙️ Val shesternyalari yeyilib ketgan</button>
-          <button class="status-btn nosoz-reason" data-status="Nosoz — Mаhovik shponkasi chiqib ketgan">🔑 Mahovik shponkasi chiqib ketgan</button>
-          <button class="status-btn nosoz-reason" data-status="Nosoz — Reduktorda qattiq tovush bor">🔊 Reduktorda qattiq tovush bor</button>
-          <button class="status-btn nosoz-reason" data-status="Nosoz — Travers uzilgan">💥 Travers uzilgan</button>
-          <button class="status-btn nosoz-reason" data-status="Nosoz — Quduqda suyuqlik kelishi to'xtagan">💧 Quduqda suyuqlik kelishi to'xtagan</button>
-        </div>
-      </div>
-    </div>
-    <div class="section-card">
-      <div class="section-title">📝 Izoh</div>
-      <div class="form-group"><textarea id="well-izoh" placeholder="Quduq haqida izoh yozing..."></textarea></div>
-    </div>
-    <div class="section-card">
-      <div class="section-title">📸 Rasm</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-        <div class="img-upload-area" id="img-upload-camera" style="margin-bottom:0;padding:14px">
-          <p style="font-size:.8rem">📷 Kamera</p>
-        </div>
-        <div class="img-upload-area" id="img-upload-gallery" style="margin-bottom:0;padding:14px">
-          <p style="font-size:.8rem">🖼️ Galereya</p>
-        </div>
-      </div>
-      <input type="file" id="img-input-camera" accept="image/*" capture="environment" multiple style="display:none">
-      <input type="file" id="img-input-gallery" accept="image/*" multiple style="display:none">
-      <div class="img-preview" id="img-preview"></div>
-      <div style="font-size:.75rem;color:var(--text2);margin-top:8px">⚠️ Faqat bugungi rasmlar qabul qilinadi</div>
-    </div>
-    <button class="btn-complete" id="complete-btn" disabled>🔒 Avval QR skanerlang</button>
-
-  </div>
-
-  <div class="page" id="page-history">
-    <div class="page-title">Tarix</div>
-    <div class="filter-row" id="filter-row">
-      <button class="filter-btn active" data-f="all">Hammasi</button>
-      <button class="filter-btn" data-f="1GS">1GS</button>
-      <button class="filter-btn" data-f="16">16</button>
-      <button class="filter-btn" data-f="23">23</button>
-      <button class="filter-btn" data-f="28">28</button>
-      <button class="filter-btn" data-f="31">31</button>
-      <button class="filter-btn" data-f="32">32</button>
-      <button class="filter-btn" data-f="37">37</button>
-      <button class="filter-btn" data-f="40">40</button>
-      <button class="filter-btn" data-f="42">42</button>
-      <button class="filter-btn" data-f="43">43</button>
-    </div>
-    <div id="history-list"></div>
-  </div>
-
-  <div class="page" id="page-emergency">
-    <div class="emergency-header"><h2>🚨 AVARIYA HOLATI</h2><p>Avariya signallari</p></div>
-    <div class="section-card">
-      <div class="section-title">Yangi avariya</div>
-      <div class="form-group"><label>Quduq</label>
-        <select id="em-well"><option>1GS</option><option>16</option><option>23</option><option>28</option><option>31</option><option>32</option><option>37</option><option>40</option><option>42</option><option>43</option></select>
-      </div>
-      <div class="form-group"><label>Tavsif</label><textarea id="em-desc" placeholder="Avariya haqida yozing..."></textarea></div>
-      <button class="btn-primary" id="em-send-btn" style="background:linear-gradient(135deg,var(--danger),#b91c1c)">🚨 YUBORISH</button>
-    </div>
-    <!-- Aktiv avariyalar -->
-    <div class="section-card" style="margin-top:12px">
-      <div class="section-title" style="color:var(--red)">🔴 Aktiv avariyalar</div>
-      <div id="emergency-list"></div>
-    </div>
-    <!-- Bartaraf etilgan avariyalar -->
-    <div class="section-card" style="margin-top:12px">
-      <div class="section-title" style="color:var(--green)">✅ Bartaraf etildi</div>
-      <div id="resolved-list"><div class="empty-state">Yuklanmoqda...</div></div>
-    </div>
-  </div>
-
-  <div class="page" id="page-settings">
-    <div class="page-title">Sozlamalar</div>
-    <div class="profile-section">
-      <div class="profile-avatar-big" id="profile-avatar-big">
-        <span id="profile-letter">A</span>
-        <input type="file" id="profile-img-input" accept="image/*" style="display:none">
-      </div>
-      <div class="profile-name" id="profile-name-display">Operator</div>
-      <div class="profile-email" id="profile-email-display">--</div>
-      <button class="delete-photo-btn" id="delete-photo-btn">🗑️ Rasmni o'chirish</button>
-    </div>
-    <!-- Admin panel: muddatsiz chiqishlar -->
-    <div id="admin-alerts-section" style="display:none">
-      <div class="section-card">
-        <div class="section-title" style="color:var(--red)">⚠️ Muddatsiz chiqishlar</div>
-        <div id="admin-alerts-list"><div class="empty-state">Yuklanmoqda...</div></div>
-      </div>
-      <div class="section-card">
-        <div class="section-title">📷 Quduq QR kodlari</div>
-        <div style="font-size:.8rem;color:var(--text2);margin-bottom:12px">Har bir quduq yoniga osish uchun QR kodlar. Bosingiz va yuklab oling.</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px" id="qr-codes-grid"></div>
-      </div>
-    </div>
-    <!-- Kun/tun rejimi -->
-    <div class="settings-section" style="margin-bottom:16px">
-      <div class="settings-item" onclick="toggleDayNight()" style="cursor:pointer">
-        <div class="s-label"><span id="theme-toggle-icon">🌙</span> <span id="theme-toggle-label">Tungi rejim</span></div>
-        <span style="color:var(--text2);font-size:1.2rem">›</span>
-      </div>
-    </div>
-    <!-- Fon rangi -->
-    <div class="section-card" style="margin-bottom:16px">
-      <div class="section-title">🎨 Fon rangi</div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px" id="theme-grid">
-        <!-- Qoʻngʻir qora (default) -->
-        <div class="theme-dot" data-bg="#0a0f1e" data-bg2="#0f1628" data-bg3="#151d35" data-card="#111827" style="background:#0a0f1e;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid var(--accent);margin:auto"></div>
-        <div class="theme-dot" data-bg="#0d1b2a" data-bg2="#1b263b" data-bg3="#1b2838" data-card="#162032" style="background:#0d1b2a;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
-        <div class="theme-dot" data-bg="#0f2017" data-bg2="#122a1c" data-bg3="#163322" data-card="#0f2017" style="background:#0f2017;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
-        <div class="theme-dot" data-bg="#1a0a2e" data-bg2="#2a1047" data-bg3="#220d3b" data-card="#1a0a2e" style="background:#1a0a2e;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
-        <div class="theme-dot" data-bg="#1a0a0a" data-bg2="#2a1010" data-bg3="#221010" data-card="#1a0a0a" style="background:#1a0a0a;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
-        <div class="theme-dot" data-bg="#111111" data-bg2="#1a1a1a" data-bg3="#222222" data-card="#141414" style="background:#111111;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
-        <div class="theme-dot" data-bg="#0a1628" data-bg2="#0f1e36" data-bg3="#132440" data-card="#0d1b30" style="background:#0a1628;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
-        <div class="theme-dot" data-bg="#1c1408" data-bg2="#2a1e0a" data-bg3="#33260d" data-card="#1c1408" style="background:#1c1408;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
-        <!-- Ochroq ranglar -->
-        <div class="theme-dot" data-bg="#1e2a3a" data-bg2="#263547" data-bg3="#2d3f55" data-card="#243040" style="background:#1e2a3a;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
-        <div class="theme-dot" data-bg="#1a2a1a" data-bg2="#243524" data-bg3="#2a3d2a" data-card="#1e2e1e" style="background:#1a2a1a;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
-        <div class="theme-dot" data-bg="#2a1e30" data-bg2="#362645" data-bg3="#3d2e50" data-card="#2e2238" style="background:#2a1e30;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
-        <div class="theme-dot" data-bg="#2a2010" data-bg2="#352a18" data-bg3="#3d3020" data-card="#2e2412" style="background:#2a2010;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
-        <!-- Yorqinroq (kul rang) -->
-        <div class="theme-dot" data-bg="#1c2333" data-bg2="#232d42" data-bg3="#2a364e" data-card="#1f2840" style="background:#1c2333;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
-        <div class="theme-dot" data-bg="#252525" data-bg2="#303030" data-bg3="#383838" data-card="#282828" style="background:#252525;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
-        <div class="theme-dot" data-bg="#1a2420" data-bg2="#222e28" data-bg3="#283830" data-card="#1e2a24" style="background:#1a2420;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
-        <div class="theme-dot" data-bg="#201a28" data-bg2="#2a2235" data-bg3="#322a3f" data-card="#241e2e" style="background:#201a28;width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;margin:auto"></div>
-      </div>
-    </div>
-    <div class="settings-section">
-      <div class="settings-item danger" id="logout-btn">
-        <div class="s-label">🚪 Chiqish</div>
-        <span>›</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="bottom-nav">
-    <button class="nav-btn active" data-page="home">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-      Bosh
-    </button>
-    <button class="nav-emergency" data-page="emergency">
-      <div class="em-icon"><svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4m0 4h.01"/></svg></div>
-      <span>Avariya</span>
-    </button>
-    <button class="nav-btn" data-page="history">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-      Tarix
-    </button>
-    <button class="nav-btn" data-page="settings">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
-      Sozlama
-    </button>
-  </div>
-</div>
-
-<!-- Bugungi obxod detail modal -->
-<div id="obxod-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;overflow-y:auto;padding:16px">
-  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;max-width:480px;margin:0 auto;padding:20px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <div style="font-family:'Rajdhani',sans-serif;font-size:1.2rem;font-weight:700">🔄 Bugungi obxod</div>
-      <button onclick="closeObxodModal()" style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text);cursor:pointer">✕</button>
-    </div>
-    <div id="obxod-modal-list"></div>
-  </div>
-</div>
-
-<!-- Tekshiruv detail modal -->
-<div id="tekshiruv-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:250;overflow-y:auto;padding:16px">
-  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;max-width:480px;margin:0 auto;padding:20px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <div style="font-family:'Rajdhani',sans-serif;font-size:1.2rem;font-weight:700">📋 Tekshiruv</div>
-      <button onclick="closeTekshiruvModal()" style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text);cursor:pointer">✕</button>
-    </div>
-    <div id="tekshiruv-modal-content"></div>
-  </div>
-</div>
-
-<!-- QR Scanner Modal -->
-<div id="qr-modal">
-  <h3 id="qr-modal-title">📷 QR Skanerlash</h3>
-  <div id="qr-video-wrap">
-    <video id="qr-video" playsinline muted></video>
-    <div class="qr-overlay">
-      <div class="qr-frame">
-        <div class="qr-scan-line"></div>
-      </div>
-    </div>
-  </div>
-  <canvas id="qr-canvas" style="display:none"></canvas>
-  <button id="qr-cancel-btn" onclick="closeQRModal()">✕ Bekor qilish</button>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<!-- jsQR library -->
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-<!-- Firebase CDN (compat version - global scope) -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+<audio id="audio-siren" loop src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg"></audio>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyAu0p3CH5zyGYW2tcuaMUMyj7KI73fhLpk",
-  authDomain: "quduqlar-nazorati.firebaseapp.com",
-  projectId: "quduqlar-nazorati",
-  storageBucket: "quduqlar-nazorati.firebasestorage.app",
-  messagingSenderId: "650800821244",
-  appId: "1:650800821244:web:d8d2b137edc99fa6a8f879"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-const storage = firebase.storage();
+// ===== GLOBAL DATA & REAL GPS KOORDINATALARI =====
+// Тест қилиб кўришингиз учун Тошкентдаги реал координаталар қўйилди. Уларни ўз қудуқларингиз координатасига алмаштиришингиз мумкин.
+let wellsData = [
+  { id: '1GS', name: 'Quduq №1-GS', status: 'soz', type: 'moy', lastCheck: '10:15', speed: 8.5, press: 12.4, temp: 42, amp: 18, lat: 41.3111, lng: 69.2797 },
+  { id: '16', name: 'Quduq №16', status: 'nosoz', type: 'gaz', lastCheck: '09:40', speed: 0.0, press: 3.1, temp: 18, amp: 0, lat: 41.3120, lng: 69.2810 },
+  { id: '24B', name: 'Quduq №24-B', status: 'soz', type: 'moy', lastCheck: 'Kecha', speed: 9.1, press: 14.2, temp: 45, amp: 21, lat: 41.3105, lng: 69.2785 },
+  { id: '102', name: 'Quduq №102', status: 'soz', type: 'suv', lastCheck: '08:10', speed: 12.0, press: 8.5, temp: 24, amp: 14, lat: 41.3135, lng: 69.2830 }
+];
 
-const WELLS = ['1GS','16','23','28','31','32','37','40','42','43'];
-const MIN_SECONDS = 600; // 10 daqiqa
-let currentUser = null;
-let userName = '';
-let currentWell = null;
-let wellStartTime = null;
-let wellEnterTime = null;  // QR kirish vaqti
-let timerInterval = null;
-let qrUnlockTimer = null;
-let qrScanMode = null;     // 'enter' | 'exit'
-let qrStream = null;
-let qrAnimFrame = null;
-let enterScanned = false;
-let exitScanned = false;
-let selectedStatus = null;
-let selectedImages = [];
-let wellData = {};
-let historyFilter = 'all';
+let isAuthed = false;
+let currentWellId = null;
+let reportSelectedStatus = 'soz';
+let sirenMuted = false;
 
-// ===== HIMOYA TIZIMI =====
-const MAX_ATTEMPTS = 5;           // Maksimal urinishlar soni
-const LOCKOUT_MS   = 5 * 60 * 1000; // 5 daqiqa blok
-const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 daqiqa sessiya
+let obxodActive = false;
+let obxodInterval = null;
+let obxodSeconds = 0;
 
-let loginAttempts = parseInt(localStorage.getItem('loginAttempts') || '0');
-let lockoutUntil  = parseInt(localStorage.getItem('lockoutUntil')  || '0');
-let sessionTimer  = null;
-let lastActivity  = Date.now();
+let pumpAnimInterval = null;
+let pumpAngle = 0;
 
-// Sessiya faolligini kuzatish
-['click','touchstart','keydown','scroll'].forEach(ev => {
-  document.addEventListener(ev, () => { lastActivity = Date.now(); }, { passive: true });
-});
-
-function startSessionWatcher() {
-  clearInterval(sessionTimer);
-  sessionTimer = setInterval(() => {
-    if (currentUser && Date.now() - lastActivity > SESSION_TIMEOUT_MS) {
-      showToast('⏰ Sessiya muddati tugadi. Qayta kiring!', 'error');
-      auth.signOut();
-    }
-  }, 60000); // har 1 daqiqada tekshir
+// ===== TOAST BILDIRISHNOMALARI =====
+function showToast(msg, type='info') {
+  const box = document.getElementById('toast-box');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span>${msg}</span>`;
+  box.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; setTimeout(() => t.remove(), 300); }, 3500);
 }
 
-function isLockedOut() {
-  if (Date.now() < lockoutUntil) return true;
-  if (lockoutUntil > 0 && Date.now() >= lockoutUntil) {
-    // Blok muddati o'tdi — tozalash
-    loginAttempts = 0;
-    lockoutUntil  = 0;
-    localStorage.removeItem('loginAttempts');
-    localStorage.removeItem('lockoutUntil');
-    document.getElementById('lockout-banner').style.display = 'none';
-  }
-  return false;
+// ===== AUTH TIZIMI =====
+function togglePassView() {
+  const inp = document.getElementById('auth-pass');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
 }
-
-function updateLockoutBanner() {
-  const banner = document.getElementById('lockout-banner');
-  if (Date.now() < lockoutUntil) {
-    const remaining = Math.ceil((lockoutUntil - Date.now()) / 1000);
-    const mins = Math.floor(remaining / 60);
-    const secs = remaining % 60;
-    banner.style.display = 'block';
-    banner.textContent = `🔒 Hisobingiz ${mins}:${String(secs).padStart(2,'0')} ga bloklandi. Iltimos kuting.`;
-    document.getElementById('login-btn').disabled = true;
-    document.getElementById('login-btn').style.opacity = '0.5';
-    setTimeout(updateLockoutBanner, 1000);
+function handleAuth() {
+  const email = document.getElementById('auth-email').value;
+  const pass = document.getElementById('auth-pass').value;
+  if(email.trim() !== '' && pass === '123456') {
+    isAuthed = true;
+    document.getElementById('auth-screen').classList.remove('active');
+    document.getElementById('page-home').classList.add('active');
+    document.getElementById('main-nav').style.display = 'flex';
+    showToast('🔓 Tizimga muvaffaqiyatli kirildi!', 'success');
+    initApp();
   } else {
-    banner.style.display = 'none';
-    document.getElementById('login-btn').disabled = false;
-    document.getElementById('login-btn').style.opacity = '1';
-    if (lockoutUntil > 0) { isLockedOut(); } // tozalash
+    showToast('❌ Login yoki parol xato!', 'error');
   }
 }
-
-// Sahifa yuklananda blok holatini tekshir
-if (lockoutUntil > 0) updateLockoutBanner();
-
-// Parol ko'rsatish/yashirish
-function togglePassword() {
-  const inp = document.getElementById('login-password');
-  const btn = document.getElementById('toggle-password');
-  if (inp.type === 'password') {
-    inp.type = 'text';
-    btn.textContent = '🙈';
-  } else {
-    inp.type = 'password';
-    btn.textContent = '👁';
-  }
+function logout() {
+  isAuthed = false;
+  stopObxodLogic();
+  stopPumpAnimation();
+  document.getElementById('audio-siren').pause();
+  document.getElementById('page-home').classList.remove('active');
+  document.getElementById('page-profile').classList.remove('active');
+  document.getElementById('well-detail').classList.remove('active');
+  document.getElementById('main-nav').style.display = 'none';
+  document.getElementById('auth-screen').classList.add('active');
 }
 
-// ===== AUTH =====
-auth.onAuthStateChanged(async user => {
-  if (user) {
-    // Muvaffaqiyatli kirish — urinishlarni tozalash
-    loginAttempts = 0;
-    lockoutUntil  = 0;
-    localStorage.removeItem('loginAttempts');
-    localStorage.removeItem('lockoutUntil');
-    currentUser = user;
-    lastActivity = Date.now();
-    startSessionWatcher();
-    document.getElementById('auth-screen').style.display = 'none';
-    document.getElementById('app-screen').style.display = 'block';
-    await loadProfile();
-    applyDayNightMode();
-    renderWells();
-    listenEmergencies();
-    startClock();
-  } else {
-    currentUser = null;
-    clearInterval(sessionTimer);
-    document.getElementById('auth-screen').style.display = 'flex';
-    document.getElementById('app-screen').style.display = 'none';
-  }
-});
-
-document.getElementById('login-btn').addEventListener('click', async () => {
-  if (isLockedOut()) { updateLockoutBanner(); return; }
-
-  const email = document.getElementById('login-email').value.trim();
-  const pass  = document.getElementById('login-password').value;
-  const err   = document.getElementById('auth-error');
-  err.style.display = 'none';
-
-  if (!email || !pass) {
-    err.textContent = 'Email va parolni kiriting!';
-    err.style.display = 'block';
-    return;
-  }
-
-  const btn = document.getElementById('login-btn');
-  btn.disabled = true;
-  btn.textContent = 'Tekshirilmoqda...';
-
-  try {
-    await auth.signInWithEmailAndPassword(email, pass);
-    btn.textContent = 'KIRISH';
-    btn.disabled = false;
-  } catch(e) {
-    loginAttempts++;
-    localStorage.setItem('loginAttempts', loginAttempts);
-    const remaining = MAX_ATTEMPTS - loginAttempts;
-    btn.textContent = 'KIRISH';
-    btn.disabled = false;
-
-    if (loginAttempts >= MAX_ATTEMPTS) {
-      lockoutUntil = Date.now() + LOCKOUT_MS;
-      localStorage.setItem('lockoutUntil', lockoutUntil);
-      err.style.display = 'none';
-      updateLockoutBanner();
-    } else {
-      err.textContent = `❌ Email yoki parol noto'g'ri! (${remaining} ta urinish qoldi)`;
-      err.style.display = 'block';
-    }
-  }
-});
-
-// Enter tugmasi bilan kirish
-document.getElementById('login-password').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('login-btn').click();
-});
-document.getElementById('login-email').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('login-password').focus();
-});
-
-document.getElementById('logout-btn').addEventListener('click', async () => {
-  clearInterval(sessionTimer);
-  await auth.signOut();
-});
-
-// ===== FORGOT PASSWORD =====
-document.getElementById('forgot-btn').addEventListener('click', async () => {
-  const email = document.getElementById('login-email').value.trim();
-  const err = document.getElementById('auth-error');
-  const success = document.getElementById('auth-success');
-  err.style.display = 'none';
-  success.style.display = 'none';
-  if (!email) {
-    err.textContent = 'Avval emailingizni kiriting!';
-    err.style.display = 'block';
-    return;
-  }
-  try {
-    await auth.sendPasswordResetEmail(email);
-    success.textContent = '✅ ' + email + ' ga parol tiklash havolasi yuborildi!';
-    success.style.display = 'block';
-  } catch(e) {
-    err.textContent = 'Email topilmadi yoki xatolik yuz berdi!';
-    err.style.display = 'block';
-  }
-});
-
-// ===== PROFILE =====
-async function loadProfile() {
-  try {
-    const doc = await db.collection('users').doc(currentUser.uid).get();
-    userName = currentUser.email.split('@')[0];
-    let photo = null;
-    if (doc.exists) {
-      userName = doc.data().name || userName;
-      photo = doc.data().photoURL || null;
-    }
-    document.getElementById('header-name').textContent = userName;
-    document.getElementById('profile-name-display').textContent = userName;
-    document.getElementById('profile-email-display').textContent = currentUser.email;
-    const letter = userName.charAt(0).toUpperCase();
-    document.getElementById('header-avatar').textContent = letter;
-    document.getElementById('profile-letter').textContent = letter;
-    if (photo) {
-      document.getElementById('header-avatar').innerHTML = '<img src="'+photo+'">';
-      const pb = document.getElementById('profile-avatar-big');
-      let img = pb.querySelector('img');
-      if (!img) { img = document.createElement('img'); pb.appendChild(img); }
-      img.src = photo;
-      document.getElementById('delete-photo-btn').classList.add('visible');
-    } else {
-      document.getElementById('delete-photo-btn').classList.remove('visible');
-    }
-  } catch(e) {}
-}
-
-document.getElementById('profile-avatar-big').addEventListener('click', () => {
-  document.getElementById('profile-img-input').click();
-});
-
-// Kamera va galereya uchun ikki xil input qo'shamiz
-document.getElementById('profile-img-input').addEventListener('click', function(e) {
-  // Default: galereya ochiladi (capture yo'q)
-});
-document.getElementById('profile-img-input').addEventListener('change', async e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  // Rasmni kichiklashtirish (Firestore 1MB limit uchun)
-  function resizeImage(file, maxSize, quality) {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = ev => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let w = img.width, h = img.height;
-          if (w > maxSize || h > maxSize) {
-            if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
-            else { w = Math.round(w * maxSize / h); h = maxSize; }
-          }
-          canvas.width = w; canvas.height = h;
-          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          resolve(canvas.toDataURL('image/jpeg', quality));
-        };
-        img.src = ev.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-  try {
-    showToast('⏳ Rasm yuklanmoqda...', 'success');
-    const b64 = await resizeImage(file, 300, 0.7);
-    await db.collection('users').doc(currentUser.uid).set({ photoURL: b64, name: userName }, { merge: true });
-    const pb = document.getElementById('profile-avatar-big');
-    let img = pb.querySelector('img');
-    if (!img) { img = document.createElement('img'); pb.appendChild(img); }
-    img.src = b64;
-    document.getElementById('header-avatar').innerHTML = '<img src="'+b64+'">';
-    document.getElementById('delete-photo-btn').classList.add('visible');
-    showToast('✅ Profil rasmi yangilandi!', 'success');
-  } catch(err) {
-    console.error('Photo upload error:', err);
-    showToast('❌ Xatolik: ' + (err.message || 'Rasm saqlanmadi'), 'error');
-  }
-});
-
-document.getElementById('delete-photo-btn').addEventListener('click', async () => {
-  if (!confirm('Rasmni o\'chirishni tasdiqlaysizmi?')) return;
-  try {
-    await db.collection('users').doc(currentUser.uid).set({ photoURL: null, name: userName }, { merge: true });
-    const pb = document.getElementById('profile-avatar-big');
-    const img = pb.querySelector('img');
-    if (img) img.remove();
-    const letter = userName.charAt(0).toUpperCase();
-    document.getElementById('header-avatar').textContent = letter;
-    document.getElementById('profile-letter').textContent = letter;
-    document.getElementById('delete-photo-btn').classList.remove('visible');
-    showToast('✅ Rasm o\'chirildi!', 'success');
-  } catch(e) { showToast('❌ Xatolik!', 'error'); }
-});
-function startClock() {
-  const days = ['Yakshanba','Dushanba','Seshanba','Chorshanba','Payshanba','Juma','Shanba'];
-  setInterval(() => {
-    const n = new Date();
-    document.getElementById('current-date').textContent = days[n.getDay()]+', '+n.getDate()+'.'+(n.getMonth()+1)+'.'+n.getFullYear();
-    document.getElementById('current-time').textContent = pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds());
-  }, 1000);
-}
-function pad(n){ return String(n).padStart(2,'0'); }
-function fmtTime(d){ return pad(d.getHours())+':'+pad(d.getMinutes()); }
-function fmtDur(s){ return pad(Math.floor(s/60))+':'+pad(s%60); }
-
-// ===== NAV =====
-document.querySelectorAll('[data-page]').forEach(btn => {
-  btn.addEventListener('click', () => showPage(btn.dataset.page));
-});
-document.getElementById('go-settings').addEventListener('click', () => showPage('settings'));
-
-function showPage(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('well-detail').style.display = 'none';
-  document.querySelectorAll('.nav-btn,.nav-emergency').forEach(b => b.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  document.querySelector('[data-page="'+page+'"]')?.classList.add('active');
-  if (page === 'history') loadHistory();
-  if (page === 'wells') renderWells();
-  if (page === 'settings') {
-    const isAdmin = currentUser && currentUser.email === 'omonovabbos233@gmail.com';
-    if (isAdmin) {
-      document.getElementById('admin-alerts-section').style.display = 'block';
-      loadAdminAlerts();
-      // QR kodlarni ko'rsatish
-      const grid = document.getElementById('qr-codes-grid');
-      if (grid && !grid.innerHTML) {
-        grid.innerHTML = WELLS.map(w => {
-          const data = 'QUDUQ_' + w;
-          const url = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(data);
-          return `<a href="${url}" target="_blank" style="text-decoration:none">
-            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center">
-              <img src="${url}" style="width:100%;border-radius:6px" loading="lazy">
-              <div style="font-family:'Rajdhani',sans-serif;font-weight:700;margin-top:6px;color:var(--text)">${w} quduq</div>
-              <div style="font-size:.7rem;color:var(--text2)">Bosib yuklab oling</div>
-            </div>
-          </a>`;
-        }).join('');
-      }
-    }
-  }
-}
-
-async function loadAdminAlerts() {
-  const el = document.getElementById('admin-alerts-list');
-  el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-  try {
-    const snap = await db.collection('ogohlantirishlar').orderBy('vaqt','desc').limit(20).get();
-    if (snap.empty) { el.innerHTML = '<div class="empty-state">✅ Muddatsiz chiqish yo\'q</div>'; return; }
-    el.innerHTML = snap.docs.map(d => {
-      const x = d.data();
-      const t = x.vaqt?.toDate();
-      const dur = fmtDur(x.davomiylik || 0);
-      return `<div class="history-item" style="border-left:3px solid var(--red);padding-left:10px">
-        <div>
-          <div class="h-time" style="color:var(--red)">⚠️ ${x.quduq} — ${x.operator_nomi}</div>
-          <div class="h-duration">⏱ ${dur} (${x.sabab})</div>
-          <div style="font-size:.72rem;color:var(--text2)">${t ? t.toLocaleString('uz-UZ') : '--'}</div>
-        </div>
-        <div class="h-status nosoz">${x.ko_rildi ? '✅' : '🔴 Yangi'}</div>
-      </div>`;
-    }).join('');
-  } catch(e) { el.innerHTML = '<div class="empty-state">Xatolik</div>'; }
-}
-
-// ===== WELLS =====
-async function renderWells() {
-  const today = new Date().toDateString();
-  let soz = 0, nosoz = 0;
-  const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
-  let totalObxodCount = 0, totalObxodSec = 0;
-
-  let baseQ = db.collection('tekshiruvlar');
-  if (!isAdmin) baseQ = baseQ.where('operator_uid', '==', currentUser.uid);
-
-  let allSnap;
-  try {
-    allSnap = await baseQ.orderBy('vaqt', 'desc').get();
-  } catch(e) { allSnap = { docs: [] }; }
-
-  const allTodayDocs = allSnap.docs.filter(d => d.data().vaqt?.toDate().toDateString() === today);
-
-  // Ikkala grid uchun ham element yasaymiz
-  const fullGrid = document.getElementById('wells-grid-full');
-  fullGrid.innerHTML = '';
-
-  for (const w of WELLS) {
-    const todayDocs = allTodayDocs.filter(d => d.data().quduq === w);
-    const count = todayDocs.length;
-    let lastStatus = null, lastTime = null, totalDur = 0;
-
-    if (count > 0) {
-      lastStatus = todayDocs[0].data().holat;
-      lastTime = todayDocs[0].data().vaqt?.toDate();
-      todayDocs.forEach(d => { totalDur += d.data().davomiylik || 0; });
-    }
-
-    wellData[w] = { count, lastStatus, lastTime };
-    if (lastStatus === 'Soz') soz++;
-    else if (lastStatus) nosoz++;
-
-    totalObxodCount += count;
-    totalObxodSec += totalDur;
-
-    const card = document.createElement('div');
-    card.className = 'well-card' + (lastStatus === 'Soz' ? ' soz' : lastStatus ? ' nosoz' : '');
-    const mins = count > 0 ? Math.round(totalDur / 60) : 0;
-    const obxodLine = count > 0 ? `<div class="well-obxod">${count}x · ${mins} min</div>` : '';
-    card.innerHTML =
-      (count > 0 ? '<div class="well-count">' + count + '</div>' : '') +
-      '<div class="well-name">' + w + '</div>' +
-      '<div class="well-dot"></div>' +
-      '<div class="well-time">' + (lastTime ? fmtTime(lastTime) : '--:--') + '</div>' +
-      obxodLine;
-    card.addEventListener('click', () => showWellStats(w));
-    fullGrid.appendChild(card);
-  }
-
-  document.getElementById('stat-soz').textContent = soz;
-  document.getElementById('stat-nosoz').textContent = nosoz;
-
-  // Bosh sahifadagi quduqlar tugmasi subtitli
-  const sub = document.getElementById('wells-btn-sub');
-  if (sub) sub.textContent = WELLS.length + ' ta quduq · ' + soz + ' soz · ' + nosoz + ' nosoz';
-
-  // Umumiy obxod statistikasi
-  const summaryEl = document.getElementById('today-obxod-summary');
-  const timeEl = document.getElementById('today-obxod-time');
-  if (totalObxodCount === 0) {
-    summaryEl.textContent = 'Hali obxod yo\'q';
-    timeEl.textContent = '0 min';
-  } else {
-    const totalMins = Math.round(totalObxodSec / 60);
-    summaryEl.textContent = totalObxodCount + ' marta obxod qilindi';
-    timeEl.textContent = totalMins + ' daqiqa';
-  }
-}
-
-// ===== QUDUQ STATISTIKA MODAL =====
-async function showWellStats(w) {
-  const modal = document.getElementById('tekshiruv-modal');
-  const content = document.getElementById('tekshiruv-modal-content');
-  modal.style.display = 'block';
-  content.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+// ===== NAVIGATSIYA =====
+function switchTab(target, el) {
+  if(!isAuthed) return;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   
-  const today = new Date().toDateString();
-  const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
-  try {
-    const snap = await db.collection('tekshiruvlar').where('quduq','==',w).get();
-    let docs = snap.docs.filter(d => d.data().vaqt?.toDate().toDateString() === today);
-    if (!isAdmin) docs = docs.filter(d => d.data().operator_uid === currentUser.uid);
-    docs.sort((a,b) => (b.data().vaqt?.toDate()||0) - (a.data().vaqt?.toDate()||0));
+  document.getElementById(`page-${target}`).classList.add('active');
+  el.classList.add('active');
+}
 
-    const totalDur = docs.reduce((s,d) => s + (d.data().davomiylik||0), 0);
-    const lastStatus = docs[0]?.data().holat || null;
-    const isSoz = lastStatus === 'Soz';
-    const statusColor = !lastStatus ? 'var(--text2)' : isSoz ? 'var(--green)' : 'var(--red)';
+// ===== GEOLOKATSIYA (HAVERSINE FORMULASI) =====
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371e3; // Yer radiusi метрларда
+  const phi1 = lat1 * Math.PI / 180;
+  const phi2 = lat2 * Math.PI / 180;
+  const deltaPhi = (lat2 - lat1) * Math.PI / 180;
+  const deltaLambda = (lon2 - lon1) * Math.PI / 180;
 
-    const rows = docs.length ? docs.map(d => {
-      const data = d.data();
-      const t = data.vaqt?.toDate();
-      const kirish = data.kirish_vaqt?.toDate ? data.kirish_vaqt.toDate() : null;
-      const chiqish = data.chiqish_vaqt?.toDate ? data.chiqish_vaqt.toDate() : null;
-      return `<div class="history-item" style="cursor:pointer;margin-bottom:8px" onclick="closeTekshiruvModal();setTimeout(()=>showObxodDetail('${d.id}'),100)">
+  const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+            Math.cos(phi1) * Math.cos(phi2) *
+            Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c; // Масофа метрда қайтади
+}
+
+// ===== APPNI ISHGA TUSHIRESH =====
+function initApp() {
+  renderWells();
+  updateStats();
+  checkEmergencyAlerter();
+}
+
+function renderWells() {
+  const container = document.getElementById('wells-container');
+  container.innerHTML = '';
+  
+  wellsData.forEach(w => {
+    const card = document.createElement('div');
+    card.className = `well-card ${w.status}`;
+    card.onclick = () => showWellDetail(w.id);
+    
+    let svgIcon = `<svg viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z"/></svg>`;
+    if(w.type === 'moy') svgIcon = `<svg viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>`;
+    if(w.type === 'gaz') svgIcon = `<svg viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.41-8 11.58C4 17.91 7.58 21 12 21s8-3.09 8-7.42C20 10.41 17.33 5.55 12 2z"/></svg>`;
+    
+    card.innerHTML = `
+      <div class="well-meta">
+        <div class="well-avatar">${svgIcon}</div>
         <div>
-          <div class="h-time">${kirish?fmtTime(kirish):'--'} → ${chiqish?fmtTime(chiqish):'--'} ${data.tugallanmagan?'<span style="color:var(--red)">⚠️</span>':''}</div>
-          <div class="h-duration">⏱ ${fmtDur(data.davomiylik||0)} · ${data.operator_nomi||''}</div>
-        </div>
-        <div class="h-status ${isSoz?'soz':'nosoz'}" style="font-size:.75rem">${data.holat?.split(' — ')[0]||data.holat}</div>
-      </div>`;
-    }).join('') : '<div class="empty-state"><div class="empty-icon">📋</div>Bugun obxod yo\'q</div>';
-
-    content.innerHTML = `
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-        <div style="font-family:'Rajdhani',sans-serif;font-size:1.8rem;font-weight:700;color:var(--accent)">${w}</div>
-        <div style="flex:1">
-          <div style="font-size:.72rem;color:var(--text2)">Quduq holati</div>
-          <div style="font-weight:700;color:${statusColor}">${lastStatus||'Tekshirilmagan'}</div>
+          <div class="well-name">${w.name}</div>
+          <div class="well-time">Ko'rik: ${w.lastCheck}</div>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
-        <div style="background:var(--bg2);border-radius:10px;padding:10px;text-align:center">
-          <div style="font-family:'Rajdhani',sans-serif;font-size:1.6rem;font-weight:700;color:var(--accent)">${docs.length}</div>
-          <div style="font-size:.65rem;color:var(--text2);text-transform:uppercase">Obxod</div>
-        </div>
-        <div style="background:var(--bg2);border-radius:10px;padding:10px;text-align:center">
-          <div style="font-family:'Rajdhani',sans-serif;font-size:1.6rem;font-weight:700;color:var(--green)">${Math.round(totalDur/60)}</div>
-          <div style="font-size:.65rem;color:var(--text2);text-transform:uppercase">Daqiqa</div>
-        </div>
-        <div style="background:var(--bg2);border-radius:10px;padding:10px;text-align:center">
-          <div style="font-family:'Rajdhani',sans-serif;font-size:1.6rem;font-weight:700;color:${statusColor}">${lastStatus?'✓':'—'}</div>
-          <div style="font-size:.65rem;color:var(--text2);text-transform:uppercase">Holat</div>
-        </div>
+      <div class="well-status-indicator">
+        <span class="status-badge">${w.status === 'soz' ? 'Normal' : 'Avariya'}</span>
+        <div class="indicator-light"></div>
       </div>
-      <div style="font-family:'Rajdhani',sans-serif;font-size:.85rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Bugungi tekshiruvlar</div>
-      ${rows}
-      <button onclick="closeTekshiruvModal();openWell('${w}')" style="width:100%;margin-top:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border:none;border-radius:12px;padding:14px;font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:1px;cursor:pointer">
-        📍 OBXOD BOSHLASH
-      </button>
     `;
-  } catch(e) {
-    content.innerHTML = '<div class="empty-state">❌ ' + e.message + '</div>';
-  }
+    container.appendChild(card);
+  });
 }
-async function openObxodModal() {
-  document.getElementById('obxod-modal').style.display = 'block';
-  const el = document.getElementById('obxod-modal-list');
-  el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
 
-  const today = new Date().toDateString();
-  const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
-  try {
-    let q = db.collection('tekshiruvlar').orderBy('vaqt', 'desc');
-    if (!isAdmin) q = db.collection('tekshiruvlar').where('operator_uid','==',currentUser.uid).orderBy('vaqt','desc');
-    const snap = await q.get();
-    const docs = snap.docs.filter(d => d.data().vaqt?.toDate().toDateString() === today);
+function updateStats() {
+  const total = wellsData.length;
+  const soz = wellsData.filter(w => w.status === 'soz').length;
+  const nosoz = total - soz;
+  
+  document.getElementById('stat-total').innerText = total;
+  document.getElementById('stat-soz').innerText = soz;
+  document.getElementById('stat-nosoz').innerText = nosoz;
+}
 
-    if (!docs.length) {
-      el.innerHTML = '<div class="empty-state">Bugun hali obxod yo\'q</div>';
-      return;
+// ===== AVARIYA TIZIMI & SIRENA =====
+function checkEmergencyAlerter() {
+  const hasEmergency = wellsData.some(w => w.status === 'nosoz');
+  const sirenBtn = document.getElementById('siren-toggle-btn');
+  const audio = document.getElementById('audio-siren');
+  
+  if (hasEmergency) {
+    sirenBtn.classList.add('active');
+    if (!sirenMuted && isAuthed) {
+      audio.play().catch(()=>{});
+    } else {
+      audio.pause();
     }
-
-    // Quduqlar bo'yicha guruhlash
-    const grouped = {};
-    docs.forEach(d => {
-      const data = d.data();
-      if (!grouped[data.quduq]) grouped[data.quduq] = [];
-      grouped[data.quduq].push(data);
-    });
-
-    el.innerHTML = Object.entries(grouped).map(([quduq, list]) => {
-      const totalDur = list.reduce((s, d) => s + (d.davomiylik || 0), 0);
-      const totalMins = Math.round(totalDur / 60);
-      const rows = list.map(d => {
-        const t = d.vaqt?.toDate();
-        const dur = Math.round((d.davomiylik || 0) / 60);
-        const incomplete = d.tugallanmagan ? ' ⚠️' : '';
-        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
-          <div>
-            <span style="font-size:.85rem">${t ? fmtTime(t) : '--'}</span>
-            <span style="font-size:.75rem;color:var(--text2);margin-left:8px">${dur} min${incomplete}</span>
-            ${d.operator_nomi && isAdmin ? '<div style="font-size:.7rem;color:var(--text2)">👤 '+d.operator_nomi+'</div>' : ''}
-          </div>
-          <span class="h-status ${d.holat === 'Soz' ? 'soz' : 'nosoz'}" style="font-size:.75rem;padding:2px 8px">${d.holat}</span>
-        </div>`;
-      }).join('');
-
-      return `<div style="margin-bottom:14px">
-        <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center">
-          <span>⛽ ${quduq} quduq</span>
-          <span style="font-size:.8rem;color:var(--accent);font-weight:600">${list.length}x · ${totalMins} min</span>
-        </div>
-        ${rows}
-      </div>`;
-    }).join('');
-  } catch(e) {
-    el.innerHTML = '<div class="empty-state">Xatolik yuz berdi</div>';
+  } else {
+    sirenBtn.classList.remove('active');
+    audio.pause();
   }
 }
 
-function closeObxodModal() {
-  document.getElementById('obxod-modal').style.display = 'none';
+function toggleSirenMute() {
+  sirenMuted = !sirenMuted;
+  const icon = document.getElementById('siren-icon');
+  if(sirenMuted) {
+    icon.style.opacity = '0.4';
+    showToast('🔕 Tovushsiz rejim yoqildi', 'info');
+  } else {
+    icon.style.opacity = '1';
+    showToast('🔔 Tovushli signalizatsiya yoqildi', 'info');
+  }
+  checkEmergencyAlerter();
 }
 
-function closeTekshiruvModal() {
-  document.getElementById('tekshiruv-modal').style.display = 'none';
+// ===== OBXOD TIMERI =====
+function toggleObxod() {
+  if(!obxodActive) {
+    obxodActive = true;
+    obxodSeconds = 0;
+    document.getElementById('obxod-btn').innerText = "Tugatish";
+    document.getElementById('obxod-btn').style.background = "var(--red)";
+    document.getElementById('obxod-status').innerText = "Aylanib chiqish jarayonida...";
+    document.getElementById('obxod-timer-badge').style.display = "flex";
+    showToast('⏱ Obxod vaqti boshlandi. Quduqlarni tekshiring.', 'info');
+    
+    obxodInterval = setInterval(() => {
+      obxodSeconds++;
+      const m = String(Math.floor(obxodSeconds / 60)).padStart(2,'0');
+      const s = String(obxodSeconds % 60).padStart(2,'0');
+      document.getElementById('obxod-time-val').innerText = `${m}:${s}`;
+    }, 1000);
+  } else {
+    stopObxodLogic();
+    showToast('💾 Obxod yakunlandi va vaqt saqlandi.', 'success');
+  }
+}
+function stopObxodLogic() {
+  obxodActive = false;
+  clearInterval(obxodInterval);
+  document.getElementById('obxod-btn').innerText = "Boshlash";
+  document.getElementById('obxod-btn').style.background = "linear-gradient(135deg,var(--accent),var(--accent2))";
+  document.getElementById('obxod-status').innerText = "Aktiv holatda emas";
+  document.getElementById('obxod-timer-badge').style.display = "none";
 }
 
-async function showObxodDetail(docId) {
-  const modal = document.getElementById('tekshiruv-modal');
-  const content = document.getElementById('tekshiruv-modal-content');
-  modal.style.display = 'block';
-  content.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-  try {
-    const doc = await db.collection('tekshiruvlar').doc(docId).get();
-    if (!doc.exists) { content.innerHTML = '<div class="empty-state">Topilmadi</div>'; return; }
-    const d = doc.data();
-    const vaqt = d.vaqt?.toDate();
-    const kirish = d.kirish_vaqt?.toDate ? d.kirish_vaqt.toDate() : null;
-    const chiqish = d.chiqish_vaqt?.toDate ? d.chiqish_vaqt.toDate() : null;
-    const isSoz = d.holat === 'Soz';
-    const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
-    content.innerHTML = `
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-        <div style="font-family:'Rajdhani',sans-serif;font-size:1.6rem;font-weight:700;color:var(--accent)">${d.quduq} quduq</div>
-        <div class="h-status ${isSoz?'soz':'nosoz'}" style="font-size:.85rem">${d.holat?.split(' — ')[0]||d.holat}</div>
-      </div>
-      ${d.tugallanmagan ? '<div style="background:rgba(239,68,68,.12);border:1px solid var(--red);border-radius:8px;padding:8px 12px;font-size:.82rem;color:var(--red);margin-bottom:12px">⚠️ Tugallanmagan obxod</div>' : ''}
-      <div style="background:var(--bg2);border-radius:10px;padding:12px;margin-bottom:12px">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div>
-            <div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Kirish</div>
-            <div style="font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;color:var(--green)">${kirish ? fmtTime(kirish) : '--:--'}</div>
-          </div>
-          <div>
-            <div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Chiqish</div>
-            <div style="font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;color:var(--accent)">${chiqish ? fmtTime(chiqish) : '--:--'}</div>
-          </div>
-          <div>
-            <div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Davomiylik</div>
-            <div style="font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700">${fmtDur(d.davomiylik||0)}</div>
-          </div>
-          <div>
-            <div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Sana</div>
-            <div style="font-family:'Rajdhani',sans-serif;font-size:.95rem;font-weight:700">${vaqt ? vaqt.toLocaleDateString('uz-UZ') : '--'}</div>
-          </div>
-        </div>
-      </div>
-      <div style="background:var(--bg2);border-radius:10px;padding:12px;margin-bottom:12px">
-        <div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">👤 Operator</div>
-        <div style="font-weight:600">${d.operator_nomi||'--'}</div>
-      </div>
-      ${d.holat && d.holat !== 'Soz' ? `<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:12px;margin-bottom:12px">
-        <div style="font-size:.72rem;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">❌ Nosozlik sababi</div>
-        <div style="font-size:.88rem;color:var(--text)">${d.holat.replace('Nosoz — ','')}</div>
-      </div>` : ''}
-      ${d.izoh ? `<div style="background:var(--bg2);border-radius:10px;padding:12px;margin-bottom:12px">
-        <div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">💬 Izoh</div>
-        <div style="font-size:.88rem">${d.izoh}</div>
-      </div>` : ''}
-      ${d.rasmlar?.length ? `<div>
-        <div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📸 Rasmlar</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">${d.rasmlar.map(r=>`<img src="${r}" onclick="this.style.width=this.style.width==='100%'?'70px':'100%'" style="width:70px;height:70px;border-radius:8px;object-fit:cover;border:1px solid var(--border);cursor:pointer;transition:all .3s">`).join('')}</div>
-      </div>` : ''}
-      ${isAdmin ? `<button onclick="deleteRecord('${docId}');closeTekshiruvModal()" style="width:100%;margin-top:16px;background:rgba(239,68,68,.15);border:1px solid var(--red);color:var(--red);border-radius:10px;padding:12px;font-size:.88rem;cursor:pointer">🗑️ Yozuvni o'chirish</button>` : ''}
-    `;
-  } catch(e) { content.innerHTML = '<div class="empty-state">❌ ' + e.message + '</div>'; }
+// ===== QUDUQ DIAGRAMMASI VA ANIMATSIYASI =====
+function showWellDetail(id) {
+  currentWellId = id;
+  const w = wellsData.find(x => x.id === id);
+  if(!w) return;
+  
+  document.getElementById('det-name').innerText = w.name;
+  document.getElementById('det-type').innerText = `Turi: ${w.type === 'moy' ? 'Neft (Moy) Qudug\'i' : w.type==='gaz' ? 'Gaz Qudug\'i' : 'Suv Haydash Qudug\'i'}`;
+  document.getElementById('det-speed').innerText = w.speed.toFixed(1);
+  document.getElementById('det-press').innerText = w.press.toFixed(1);
+  document.getElementById('det-temp').innerText = w.temp;
+  document.getElementById('det-amp').innerText = w.amp;
+  
+  setReportStatus(w.status);
+  document.getElementById('oil-drop').style.display = w.type === 'moy' && w.status === 'soz' ? 'block' : 'none';
+  
+  startPumpAnimation(w.speed);
+  document.getElementById('well-detail').classList.add('active');
 }
 
-// ===== WELL DETAIL =====
-let prevPage = 'home'; // qaysi sahifadan kelindi
-
-function openWell(w) {
-  // Qaysi sahifa aktiv — saqlaymiz
-  prevPage = 'home';
-  document.querySelectorAll('.page').forEach(p => {
-    if (p.classList.contains('active')) prevPage = p.id.replace('page-', '');
-  });
-  currentWell = w;
-  selectedStatus = null;
-  selectedImages = [];
-  wellStartTime = null;
-  wellEnterTime = null;
-  enterScanned = false;
-  exitScanned = false;
-
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('well-detail').style.display = 'block';
-  document.getElementById('wd-title').textContent = w + ' - Quduq';
-  document.getElementById('wd-subtitle').textContent = new Date().toLocaleDateString('uz-UZ');
-  document.getElementById('well-izoh').value = '';
-  document.getElementById('img-preview').innerHTML = '';
-  document.getElementById('well-timer').textContent = '--:--';
-  document.getElementById('well-timer').className = 'timer-display';
-  document.getElementById('timer-label').textContent = 'QR skanerlanishini kuting';
-  document.getElementById('warn-banner').className = 'warn-banner';
-  document.querySelectorAll('.status-btn').forEach(b => {
-    b.className = 'status-btn' + (b.classList.contains('nosoz-reason') ? ' nosoz-reason' : '');
-  });
-  document.getElementById('nosoz-menu').style.display = 'none';
-
-  // Kirish kartasi aktiv, chiqish kartasi o'chiq
-  const enterCard = document.getElementById('qr-enter-card');
-  const exitCard = document.getElementById('qr-exit-card');
-  enterCard.className = 'qr-state-card active-scan';
-  enterCard.innerHTML = '<div class="qr-state-icon">📷</div><div class="qr-state-title">1. Kirish — QR Skanerlash</div><div class="qr-state-sub">Quduq yaqinidagi QR kodni skaner qiling</div>';
-  exitCard.style.opacity = '0.4';
-  exitCard.style.pointerEvents = 'none';
-  exitCard.className = 'qr-state-card';
-  exitCard.innerHTML = '<div class="qr-state-icon">✅</div><div class="qr-state-title">2. Chiqish — QR Skanerlash</div><div class="qr-state-sub">10 daqiqa o\'tgach quduqni tark etayotganda skaner qiling</div>';
-
-  const btn = document.getElementById('complete-btn');
-  btn.disabled = true;
-  btn.textContent = '🔒 Avval QR skanerlang';
-
-  if (timerInterval) clearInterval(timerInterval);
-  if (qrUnlockTimer) clearTimeout(qrUnlockTimer);
-
-  loadWellHistory(w);
+function closeWellDetail() {
+  document.getElementById('well-detail').classList.remove('active');
+  stopPumpAnimation();
 }
 
-// ===== QR SCANNER =====
-function startQRScan(mode) {
-  qrScanMode = mode;
-  const modal = document.getElementById('qr-modal');
-  const title = document.getElementById('qr-modal-title');
-  title.textContent = mode === 'enter' ? '📷 Kirish QR — ' + currentWell : '📷 Chiqish QR — ' + currentWell;
-  modal.classList.add('open');
-
-  const video = document.getElementById('qr-video');
-  const canvas = document.getElementById('qr-canvas');
-  const ctx = canvas.getContext('2d');
-
-  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-    .then(stream => {
-      qrStream = stream;
-      video.srcObject = stream;
-      video.play();
-      requestAnimationFrame(function scan() {
-        if (video.readyState === video.HAVE_ENOUGH_DATA) {
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-          ctx.drawImage(video, 0, 0);
-          const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          const code = jsQR(imgData.data, imgData.width, imgData.height);
-          if (code) {
-            handleQRResult(code.data);
-            return;
-          }
-        }
-        qrAnimFrame = requestAnimationFrame(scan);
-      });
-    })
-    .catch(() => {
-      // Kamera yo'q (test uchun — simulyatsiya)
-      closeQRModal();
-      handleQRResult('QUDUQ_' + currentWell);
-    });
+function startPumpAnimation(speed) {
+  stopPumpAnimation();
+  if(speed <= 0) return;
+  
+  const beam = document.getElementById('pump-beam');
+  const rod = document.getElementById('pump-rod');
+  const drop = document.getElementById('oil-drop');
+  
+  let frame = 0;
+  const intervalTime = 40 - (speed * 2); 
+  
+  pumpAnimInterval = setInterval(() => {
+    frame += 0.08;
+    const angle = Math.sin(frame) * 12;
+    beam.style.transform = `rotate(${angle}deg)`;
+    
+    const rodY = 52 + Math.sin(frame) * 8;
+    rod.setAttribute('y1', rodY);
+    
+    if(drop.style.display === 'block') {
+      let dropY = 98 + (frame * 15 % 20);
+      if(dropY > 110) dropY = 98;
+      drop.setAttribute('d', `M63,${dropY} C60,${dropY+5} 66,${dropY+5} 63,${dropY}`);
+    }
+  }, intervalTime < 15 ? 15 : intervalTime);
 }
 
-function closeQRModal() {
-  document.getElementById('qr-modal').classList.remove('open');
-  if (qrStream) { qrStream.getTracks().forEach(t => t.stop()); qrStream = null; }
-  if (qrAnimFrame) { cancelAnimationFrame(qrAnimFrame); qrAnimFrame = null; }
+function stopPumpAnimation() {
+  clearInterval(pumpAnimInterval);
 }
 
-function handleQRResult(data) {
-  closeQRModal();
-  const expected = 'QUDUQ_' + currentWell;
-  if (data !== expected) {
-    showToast('❌ Noto\'g\'ri QR! Bu ' + currentWell + ' quduqiga tegishli emas.', 'error');
+function setReportStatus(st) {
+  reportSelectedStatus = st;
+  document.getElementById('opt-soz').classList.remove('active');
+  document.getElementById('opt-nosoz').classList.remove('active');
+  if(st === 'soz') document.getElementById('opt-soz').classList.add('active');
+  else document.getElementById('opt-nosoz').classList.add('active');
+}
+
+function previewReportPhoto(input) {
+  const file = input.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = document.getElementById('photo-preview');
+      img.src = e.target.result;
+      img.style.display = 'block';
+    }
+    reader.readAsDataURL(file);
+  }
+}
+
+// ===== GPS ТЕКШИРУВИ БИЛАН ҲИСОБОТ ТИЗИМИ =====
+function sendReport() {
+  const currentWell = wellsData.find(w => w.id === currentWellId);
+  
+  if (!currentWell) {
+    showToast('❌ Quduq ma\'lumotlari xato!', 'error');
     return;
   }
 
-  if (qrScanMode === 'enter') {
-    enterScanned = true;
-    wellEnterTime = new Date();
-    wellStartTime = wellEnterTime;
+  showToast('📡 GPS koordinatalar tekshirilmoqda...', 'info');
 
-    document.getElementById('wd-subtitle').textContent = 'Kirdi: ' + fmtTime(wellEnterTime);
+  // Телефондан GPS координата олиш
+  if ("geolocation" in navigator) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const userLat = position.coords.latitude;
+        const userLng = position.coords.longitude;
 
-    // Kirish kartani yangilash
-    const enterCard = document.getElementById('qr-enter-card');
-    enterCard.className = 'qr-state-card done-scan';
-    enterCard.innerHTML = '<div class="qr-state-icon">✅</div><div class="qr-state-title">Kirish tasdiqlandi</div><div class="qr-state-sub">' + fmtTime(wellEnterTime) + ' da skanerlandi</div>';
+        // Икки нуқта орасидаги масофани ҳисоблаш
+        const distance = calculateDistance(userLat, userLng, currentWell.lat, currentWell.lng);
 
-    // Taymer ishga tushirish
-    document.getElementById('well-timer').className = 'timer-display running';
-    if (timerInterval) clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-      const elapsed = Math.floor((new Date() - wellStartTime) / 1000);
-      document.getElementById('well-timer').textContent = fmtDur(elapsed);
-      if (elapsed < MIN_SECONDS) {
-        const rem = MIN_SECONDS - elapsed;
-        document.getElementById('timer-label').textContent = 'Chiqish uchun ' + fmtDur(rem) + ' qoldi';
-      } else {
-        document.getElementById('timer-label').textContent = '✅ 10 daqiqa tugadi — chiqishingiz mumkin';
-        document.getElementById('well-timer').className = 'timer-display done';
-        // Chiqish QR kartani aktiv qilish
-        const exitCard = document.getElementById('qr-exit-card');
-        exitCard.style.opacity = '1';
-        exitCard.style.pointerEvents = 'auto';
-        exitCard.className = 'qr-state-card active-scan';
+        // ХАВФСИЗЛИК ЧЕГЕРАСИ: 50 МЕТР
+        const maxAllowedDistance = 50; 
+
+        if (distance > maxAllowedDistance) {
+          showToast(`🚷 Xatolik! Siz quduq oldida emassiz. Masofa: ${Math.round(distance)} metr. Hisobot uchun quduqqa 50m yaqin boring.`, 'error');
+          console.warn(`GPS Rad etildi: Operator ${currentWell.name} qudug'idan ${Math.round(distance)}m uzoqlikda турибди.`);
+          return;
+        }
+
+        // Агар оператор қудуқ яқинида бўлса
+        currentWell.status = reportSelectedStatus;
+        
+        if(reportSelectedStatus === 'soz') {
+          if(currentWell.speed === 0) currentWell.speed = 8.0;
+          if(currentWell.press === 3.1) currentWell.press = 11.5;
+        } else {
+          currentWell.speed = 0;
+          currentWell.press = 1.0;
+        }
+
+        const now = new Date();
+        currentWell.lastCheck = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        
+        showToast(`✅ GPS tasdiqlandi (Masofa: ${Math.round(distance)}m). Hisobot saqlandi!`, 'success');
+        
+        closeWellDetail();
+        renderWells();
+        updateStats();
+        checkEmergencyAlerter();
+        
+        document.getElementById('report-comment').value = '';
+        const preview = document.getElementById('photo-preview');
+        preview.style.display = 'none';
+        preview.src = '';
+      },
+      (error) => {
+        switch(error.code) {
+          case error.PERMISSION_DENIED:
+            showToast("❌ GPS ruxsati berilmadi. Telefon sozlamalaridan joylashuvni (Location) yoqing!", "error");
+            break;
+          case error.POSITION_UNAVAILABLE:
+            showToast("❌ GPS signali topilmadi. Ochiqroq maydonga chiqing.", "error");
+            break;
+          case error.TIMEOUT:
+            showToast("❌ Vaqt tugadi. GPS координата олиш имконсиз бўлди.", "error");
+            break;
+          default:
+            showToast("❌ GPS хатолиги юз берди.", "error");
+        }
+      },
+      {
+        enableHighAccuracy: true, // Спутник орқали ўта аниқ GPS координата сўраш
+        timeout: 10000,
+        maximumAge: 0
       }
-    }, 1000);
-
-    // 10 daqiqadan keyin chiqish QR ni avtomatik aktiv qilish
-    qrUnlockTimer = setTimeout(() => {
-      const exitCard = document.getElementById('qr-exit-card');
-      exitCard.style.opacity = '1';
-      exitCard.style.pointerEvents = 'auto';
-      exitCard.className = 'qr-state-card active-scan';
-      showToast('✅ 10 daqiqa tugadi! Endi chiqish QR ini skanerlang.', 'success');
-    }, MIN_SECONDS * 1000);
-
-    showToast('✅ Kirish tasdiqlandi! Taymer boshlandi.', 'success');
-
-  } else if (qrScanMode === 'exit') {
-    exitScanned = true;
-    const exitTime = new Date();
-    const elapsed = Math.floor((exitTime - wellStartTime) / 1000);
-    const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
-
-    // Chiqish kartani yangilash
-    const exitCard = document.getElementById('qr-exit-card');
-    exitCard.className = 'qr-state-card done-scan';
-    exitCard.innerHTML = '<div class="qr-state-icon">✅</div><div class="qr-state-title">Chiqish tasdiqlandi</div><div class="qr-state-sub">' + fmtTime(exitTime) + ' — ' + fmtDur(elapsed) + '</div>';
-
-    if (elapsed < MIN_SECONDS && !isAdmin) {
-      // 10 daqiqa tugamadi — ogohlantirish
-      document.getElementById('warn-banner').className = 'warn-banner show';
-      document.getElementById('well-timer').className = 'timer-display incomplete';
-      showToast('⚠️ 10 daqiqa tugamadi! Admin xabardor qilinadi.', 'error');
-      sendIncompleteAlert(elapsed);
-      // Tovush bilan ogohlantirish
-      playAlertSound();
-    } else {
-      document.getElementById('well-timer').className = 'timer-display done';
-    }
-
-    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-    document.getElementById('timer-label').textContent = 'Obxod yakunlandi — ' + fmtDur(elapsed);
-
-    const btn = document.getElementById('complete-btn');
-    btn.disabled = false;
-    btn.textContent = elapsed < MIN_SECONDS && !isAdmin
-      ? '⚠️ TUGALLANMAGAN OBXODNI SAQLASH'
-      : "✅ QUDUQ TO'LIQ TEKSHIRILDI";
-    showToast(elapsed >= MIN_SECONDS || isAdmin ? '✅ Saqlashingiz mumkin!' : '⚠️ Muddatsiz chiqish!', elapsed >= MIN_SECONDS || isAdmin ? 'success' : 'error');
+    );
+  } else {
+    showToast('❌ Qurilmangizda geolokatsiya tizimi mavжуд эмас.', 'error');
   }
 }
 
-// Admin ga ogohlantirish yuborish
-async function sendIncompleteAlert(elapsed) {
-  try {
-    await db.collection('ogohlantirishlar').add({
-      quduq: currentWell,
-      operator_uid: currentUser.uid,
-      operator_nomi: userName,
-      kirish_vaqt: wellStartTime,
-      tur_vaqt: new Date(),
-      davomiylik: elapsed,
-      sabab: 'Muddatsiz chiqish (10 daqiqa tugamadi)',
-      vaqt: new Date(),
-      ko_rildi: false
-    });
-  } catch(e) {}
-}
-
-document.getElementById('back-btn').addEventListener('click', () => {
-  closeQRModal();
-
-  // Kirish QR skanerlangan, lekin chiqish QR yo'q — muddatsiz chiqish!
-  if (enterScanned && !exitScanned && wellStartTime) {
-    const elapsed = Math.floor((new Date() - wellStartTime) / 1000);
-    const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
-    if (!isAdmin) {
-      sendIncompleteAlert(elapsed);
-      showToast('⚠️ Muddatsiz chiqish qayd etildi! Admin xabardor qilindi.', 'error');
-      try { playAlertSound(); } catch(e) {}
-    }
-  }
-
-  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-  if (qrUnlockTimer) { clearTimeout(qrUnlockTimer); qrUnlockTimer = null; }
-  enterScanned = false;
-  exitScanned = false;
-  wellStartTime = null;
-  document.getElementById('well-detail').style.display = 'none';
-  document.getElementById('page-' + prevPage).classList.add('active');
-  currentWell = null;
-});
-
-document.getElementById('qr-exit-card').addEventListener('click', () => {
-  if (exitScanned) return;
-  if (!enterScanned) { showToast('❗ Avval kirish QR skanerlang!', 'error'); return; }
-  startQRScan('exit');
-});
-
-function toggleNosozMenu() {
-  const menu = document.getElementById('nosoz-menu');
-  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-}
-
-document.querySelectorAll('.status-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (btn.id === 'nosoz-main-btn') return; // handled by toggleNosozMenu
-    selectedStatus = btn.dataset.status;
-    document.querySelectorAll('.status-btn').forEach(b => {
-      b.className = 'status-btn' + (b.classList.contains('nosoz-reason') ? ' nosoz-reason' : '');
-    });
-    const isSoz = selectedStatus === 'Soz';
-    btn.className = (btn.classList.contains('nosoz-reason') ? 'status-btn nosoz-reason ' : 'status-btn ') + (isSoz ? 'sel-soz' : 'sel-nosoz');
-    if (!isSoz) {
-      // nosoz tanlanganda nosoz-main-btn ham belgilansin
-      const mainBtn = document.getElementById('nosoz-main-btn');
-      if (mainBtn) mainBtn.className = 'status-btn sel-nosoz';
-    }
-    if (btn.classList.contains('nosoz-reason')) {
-      showToast('✅ ' + selectedStatus.replace('Nosoz — ',''), 'success');
-    }
-  });
-});
-
-document.getElementById('img-upload-camera').addEventListener('click', () => {
-  document.getElementById('img-input-camera').click();
-});
-document.getElementById('img-upload-gallery').addEventListener('click', () => {
-  document.getElementById('img-input-gallery').click();
-});
-
-function handleImageFiles(files) {
-  const now = new Date();
-  Array.from(files).forEach(file => {
-    const lm = file.lastModified;
-    if (lm && lm > 0) {
-      const fileDate = new Date(lm);
-      if (fileDate.getFullYear() !== now.getFullYear() ||
-          fileDate.getMonth() !== now.getMonth() ||
-          fileDate.getDate() !== now.getDate()) {
-        showToast('⚠️ Faqat bugungi rasm qabul qilinadi!', 'error'); return;
-      }
-    }
-    // lastModified=0 yoki yo'q bo'lsa (iOS galereya) — qabul qilish
-    const reader = new FileReader();
-    reader.onload = ev => {
-      const b64 = ev.target.result;
-      const idx = selectedImages.push(b64) - 1;
-      const wrap = document.createElement('div');
-      wrap.className = 'img-thumb-wrap';
-      wrap.innerHTML = '<img src="'+b64+'" class="img-thumb"><button class="remove-img">✕</button>';
-      wrap.querySelector('.remove-img').addEventListener('click', () => { selectedImages[idx] = null; wrap.remove(); });
-      document.getElementById('img-preview').appendChild(wrap);
+// ===== QR KOD SCANNER SIMULATORI =====
+function openQrScanner() {
+  if(!isAuthed) return;
+  const list = document.getElementById('qr-sim-list');
+  list.innerHTML = '';
+  
+  wellsData.forEach(w => {
+    const b = document.createElement('button');
+    b.className = 'btn-secondary';
+    b.style.justifyContent = 'center';
+    b.innerText = `Skan: ${w.name}`;
+    b.onclick = () => {
+      closeQrScanner();
+      showWellDetail(w.id);
+      showToast(`📸 QR Kod tanildi: ${w.name}`, 'success');
     };
-    reader.readAsDataURL(file);
+    list.appendChild(b);
   });
+  
+  document.getElementById('qr-modal').classList.add('active');
+}
+function closeQrScanner() {
+  document.getElementById('qr-modal').classList.remove('active');
 }
 
-document.getElementById('img-input-camera').addEventListener('change', e => handleImageFiles(e.target.files));
-document.getElementById('img-input-gallery').addEventListener('change', e => handleImageFiles(e.target.files));
-
-// Rasмni base64 dan Blob ga aylantirish
-function base64ToBlob(base64) {
-  const parts = base64.split(';base64,');
-  const contentType = parts[0].split(':')[1];
-  const raw = atob(parts[1]);
-  const arr = new Uint8Array(raw.length);
-  for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
-  return new Blob([arr], { type: contentType });
-}
-
-// Rasmni Firebase Storage ga yuklash
-async function uploadImage(base64, path) {
-  const blob = base64ToBlob(base64);
-  const ref = storage.ref(path);
-  await ref.put(blob);
-  return await ref.getDownloadURL();
-}
-
-document.getElementById('complete-btn').addEventListener('click', async () => {
-  if (!currentWell) return;
-  if (!selectedStatus) { showToast('❗ Holat tanlang!', 'error'); return; }
-  if (!enterScanned || !exitScanned) { showToast('❗ Ikkala QR ham skanerlanishi kerak!', 'error'); return; }
-
-  const dur = Math.floor(((new Date()) - wellStartTime) / 1000);
-  const incomplete = dur < MIN_SECONDS && currentUser.email !== 'omonovabbos233@gmail.com';
-  if (incomplete) {
-    document.getElementById('warn-banner').className = 'warn-banner show';
-  }
-
-  const btn = document.getElementById('complete-btn');
-  btn.disabled = true;
-
-  // Rasmlarni yuklash
-  const images = selectedImages.filter(Boolean).slice(0, 3);
-  let rasmUrls = [];
-  if (images.length > 0) {
-    showToast('📤 Rasmlar yuklanmoqda...', '');
-    try {
-      const ts = Date.now();
-      rasmUrls = await Promise.all(images.map((b64, i) =>
-        uploadImage(b64, `obxod/${currentUser.uid}/${ts}_${i}.jpg`)
-      ));
-    } catch(e) {
-      showToast('⚠️ Rasm yuklanmadi, obxod rasmsiz saqlanadi.', 'error');
-    }
-  }
-
-  showToast('Saqlanmoqda...', '');
-  try {
-    await db.collection('tekshiruvlar').add({
-      quduq: currentWell,
-      holat: selectedStatus,
-      izoh: document.getElementById('well-izoh').value.trim(),
-      kirish_vaqt: wellStartTime,
-      chiqish_vaqt: new Date(),
-      davomiylik: dur,
-      vaqt: new Date(),
-      operator_uid: currentUser.uid,
-      operator_nomi: userName,
-      rasmlar: rasmUrls,
-      tugallanmagan: incomplete,
-      qr_kirish: true,
-      qr_chiqish: true
-    });
-    showToast(incomplete ? '⚠️ Tugallanmagan obxod saqlandi!' : '✅ Saqlandi!', incomplete ? 'error' : 'success');
-    if (timerInterval) clearInterval(timerInterval);
-    if (qrUnlockTimer) clearTimeout(qrUnlockTimer);
-    setTimeout(() => {
-      document.getElementById('well-detail').style.display = 'none';
-      document.getElementById('page-home').classList.add('active');
-      currentWell = null;
-      renderWells();
-    }, 1000);
-  } catch(e) {
-    btn.disabled = false;
-    showToast('❌ Xatolik: ' + e.message, 'error');
-  }
-});
-
-async function loadWellHistory(w) {
-  const el = document.getElementById('well-history-list');
-  el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-  const today = new Date().toDateString();
-  const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
-  try {
-    // Composite index muammosini chetlash: faqat quduq bo'yicha filter, qolganini JS'da
-    let q = db.collection('tekshiruvlar').where('quduq','==',w);
-    const snap = await q.get();
-    let docs = snap.docs.filter(d => d.data().vaqt?.toDate().toDateString() === today);
-    if (!isAdmin) docs = docs.filter(d => d.data().operator_uid === currentUser.uid);
-    docs.sort((a,b) => (b.data().vaqt?.toDate()||0) - (a.data().vaqt?.toDate()||0));
-    if (!docs.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div>Bugun yo\'q</div>'; return; }
-    el.innerHTML = docs.map(d => {
-      const data = d.data();
-      const t = data.vaqt?.toDate();
-      const incomplete = data.tugallanmagan ? '<span style="color:var(--red);font-size:.7rem;margin-left:4px">⚠️</span>' : '';
-      return `<div class="history-item" style="cursor:pointer" onclick="showObxodDetail('${d.id}')">
-        <div>
-          <div class="h-time">${t?fmtTime(t):'--'} ${incomplete}</div>
-          <div class="h-duration">⏱ ${fmtDur(data.davomiylik||0)} · ${data.operator_nomi||''}</div>
-        </div>
-        <div class="h-status ${data.holat==='Soz'?'soz':'nosoz'}">${data.holat?.split(' — ')[0]||data.holat}</div>
-      </div>`;
-    }).join('');
-  } catch(e) { el.innerHTML = '<div class="empty-state">❌ ' + e.message + '</div>'; }
-}
-
-// ===== HISTORY =====
-document.getElementById('filter-row').addEventListener('click', e => {
-  const btn = e.target.closest('.filter-btn');
-  if (!btn) return;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  historyFilter = btn.dataset.f;
-  loadHistory();
-});
-
-async function loadHistory() {
-  const el = document.getElementById('history-list');
-  el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-  try {
-    const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
-    let q;
-    if (isAdmin) {
-      q = historyFilter !== 'all'
-        ? db.collection('tekshiruvlar').where('quduq','==',historyFilter).orderBy('vaqt','desc')
-        : db.collection('tekshiruvlar').orderBy('vaqt','desc');
-    } else {
-      q = historyFilter !== 'all'
-        ? db.collection('tekshiruvlar').where('quduq','==',historyFilter).where('operator_uid','==',currentUser.uid).orderBy('vaqt','desc')
-        : db.collection('tekshiruvlar').where('operator_uid','==',currentUser.uid).orderBy('vaqt','desc');
-    }
-    const snap = await q.get();
-    if (snap.empty) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div>Ma\'lumot yo\'q</div>'; return; }
-    el.innerHTML = snap.docs.slice(0,50).map(d => {
-      const data = d.data();
-      const t = data.vaqt?.toDate();
-      const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
-      return '<div class="section-card" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-family:Rajdhani,sans-serif;font-size:1.1rem;font-weight:700;color:var(--accent)">'+data.quduq+' quduq</div><div style="display:flex;align-items:center;gap:6px"><div class="h-status '+(data.holat==='Soz'?'soz':'nosoz')+'">'+data.holat+'</div>'+(isAdmin?'<button onclick="deleteRecord(\''+d.id+'\')" style="background:rgba(239,68,68,.15);border:1px solid var(--red);color:var(--red);border-radius:6px;padding:3px 8px;font-size:.72rem;cursor:pointer">🗑️</button>':'')+'</div></div><div style="font-size:.8rem;color:var(--text2)">🕐 '+(t?t.toLocaleString('uz-UZ'):'--')+' | ⏱ '+fmtDur(data.davomiylik||0)+'</div>'+(data.izoh?'<div style="font-size:.82rem;color:var(--text);margin-top:6px">💬 '+data.izoh+'</div>':'')+(data.rasmlar?.length?'<div style="display:flex;gap:6px;margin-top:8px">'+data.rasmlar.map(r=>'<img src="'+r+'" style="width:50px;height:50px;border-radius:6px;object-fit:cover">').join('')+'</div>':'')+'</div>';
-    }).join('');
-  } catch(e) { el.innerHTML = '<div class="empty-state">Xatolik: '+e.message+'</div>'; }
-}
-
-// ===== TOVUSH TIZIMI (Avariya uchun) =====
-let emergencySoundEnabled = localStorage.getItem('emergencySoundEnabled') !== 'false'; // default: yoqilgan
-let emergencySoundInterval = null;
-let audioCtx = null;
-
-function getAudioCtx() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  return audioCtx;
-}
-
-function playAlertSound() {
-  try {
-    const ctx = getAudioCtx();
-    // 3 ta bip signali
-    [0, 0.3, 0.6].forEach(offset => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.frequency.setValueAtTime(880, ctx.currentTime + offset);
-      osc.frequency.setValueAtTime(1100, ctx.currentTime + offset + 0.08);
-      gain.gain.setValueAtTime(0.6, ctx.currentTime + offset);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.2);
-      osc.start(ctx.currentTime + offset);
-      osc.stop(ctx.currentTime + offset + 0.2);
-    });
-  } catch(e) {}
-}
-
-function startEmergencySound() {
-  if (!emergencySoundEnabled) return;
-  stopEmergencySound();
-  playAlertSound();
-  emergencySoundInterval = setInterval(() => {
-    if (emergencySoundEnabled) playAlertSound();
-  }, 4000);
-}
-
-function stopEmergencySound() {
-  if (emergencySoundInterval) { clearInterval(emergencySoundInterval); emergencySoundInterval = null; }
-}
-
-function toggleEmergencySound() {
-  emergencySoundEnabled = !emergencySoundEnabled;
-  localStorage.setItem('emergencySoundEnabled', emergencySoundEnabled);
-  const btn = document.getElementById('sound-toggle-btn');
-  btn.textContent = emergencySoundEnabled ? '🔔' : '🔕';
-  btn.style.borderColor = emergencySoundEnabled ? 'var(--accent)' : 'var(--border)';
-  if (!emergencySoundEnabled) stopEmergencySound();
-  showToast(emergencySoundEnabled ? '🔔 Avariya ovozi yoqildi' : '🔕 Avariya ovozi o\'chirildi', 'success');
-}
-
-// Sahifa yuklananda holati tiklash
-(function() {
-  const btn = document.getElementById('sound-toggle-btn');
-  if (!emergencySoundEnabled) {
-    btn.textContent = '🔕';
-    btn.style.borderColor = 'var(--border)';
-  } else {
-    btn.textContent = '🔔';
-    btn.style.borderColor = 'var(--accent)';
-  }
-})();
-
-// ===== EMERGENCY =====
-function listenEmergencies() {
-  db.collection('avariyalar').orderBy('vaqt','desc').onSnapshot(snap => {
-    const activeDocs = snap.docs.filter(d => d.data().active === true);
-    const resolvedDocs = snap.docs.filter(d => d.data().active !== true);
-    if (activeDocs.length > 0) {
-      document.querySelector('[data-page="emergency"]').classList.add('has-alert');
-      startEmergencySound();
-    } else {
-      document.querySelector('[data-page="emergency"]').classList.remove('has-alert');
-      stopEmergencySound();
-    }
-
-    // Aktiv ro'yxat
-    const el = document.getElementById('emergency-list');
-    if (!activeDocs.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">✅</div>Aktiv avariya yo\'q</div>'; }
-    else {
-      el.innerHTML = activeDocs.map(d => {
-        const data = d.data();
-        const t = data.vaqt?.toDate();
-        const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
-        return '<div class="em-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="em-well">🚨 '+data.quduq+' quduq</div><div class="em-desc">'+data.tavsif+'</div><div class="em-operator">👤 '+data.operator_nomi+'</div><div class="em-time">'+(t?t.toLocaleString('uz-UZ'):'--')+'</div></div>'+(isAdmin?'<button onclick="resolveEmergency(\''+d.id+'\')" style="background:var(--green);color:#000;border:none;border-radius:8px;padding:6px 10px;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap;margin-left:8px">✅ Hal<br>qilindi</button>':'')+'</div></div>';
-      }).join('');
-    }
-
-    // Bartaraf etilgan ro'yxat
-    const rel = document.getElementById('resolved-list');
-    if (!resolvedDocs.length) { rel.innerHTML = '<div class="empty-state">Hali yo\'q</div>'; }
-    else {
-      rel.innerHTML = resolvedDocs.slice(0,10).map(d => {
-        const data = d.data();
-        const t = data.vaqt?.toDate();
-        const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
-        return '<div class="em-item" style="opacity:.7;border-color:var(--green)"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="em-well" style="color:var(--green)">✅ '+data.quduq+' quduq</div><div class="em-desc">'+data.tavsif+'</div><div class="em-operator">👤 '+data.operator_nomi+'</div><div class="em-time">'+(t?t.toLocaleString('uz-UZ'):'--')+'</div></div>'+(isAdmin?'<button onclick="deleteEmergency(\''+d.id+'\')" style="background:rgba(239,68,68,.15);border:1px solid var(--red);color:var(--red);border-radius:8px;padding:6px 10px;font-size:.72rem;cursor:pointer;white-space:nowrap;margin-left:8px">🗑️</button>':'')+'</div></div>';
-      }).join('');
-    }
-  });
-}
-
-async function resolveEmergency(id) {
-  try {
-    await db.collection('avariyalar').doc(id).update({ active: false });
-    showToast('✅ Avariya hal qilindi!', 'success');
-  } catch(e) { showToast('❌ Xatolik!', 'error'); }
-}
-
-async function deleteEmergency(id) {
-  if (!confirm('Bu yozuvni o\'chirishni tasdiqlaysizmi?')) return;
-  try {
-    await db.collection('avariyalar').doc(id).delete();
-    showToast('✅ O\'chirildi!', 'success');
-  } catch(e) { showToast('❌ Xatolik!', 'error'); }
-}
-
-document.getElementById('em-send-btn').addEventListener('click', async () => {
-  const tavsif = document.getElementById('em-desc').value.trim();
-  if (!tavsif) { showToast('❗ Tavsif yozing!', 'error'); return; }
-  try {
-    await db.collection('avariyalar').add({
-      quduq: document.getElementById('em-well').value,
-      tavsif, operator_uid: currentUser.uid,
-      operator_nomi: userName, vaqt: new Date(),
-      active: true
-    });
-    document.getElementById('em-desc').value = '';
-    showToast('🚨 Yuborildi!', 'success');
-  } catch(e) { showToast('❌ Xatolik!', 'error'); }
-});
-
-// ===== ILOVA YOPILGANDA / FON GA O'TGANDA OGOHLANTIRISH =====
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden && enterScanned && !exitScanned && wellStartTime && currentUser) {
-    const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
-    if (!isAdmin) {
-      const elapsed = Math.floor((new Date() - wellStartTime) / 1000);
-      sendIncompleteAlert(elapsed);
-    }
-  }
-});
-
-window.addEventListener('beforeunload', () => {
-  if (enterScanned && !exitScanned && wellStartTime && currentUser) {
-    const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
-    if (!isAdmin) {
-      const elapsed = Math.floor((new Date() - wellStartTime) / 1000);
-      // Sinxron yuborish uchun sendBeacon ishlatamiz
-      try {
-        const payload = JSON.stringify({
-          quduq: currentWell,
-          operator_uid: currentUser.uid,
-          operator_nomi: userName,
-          kirish_vaqt: wellStartTime?.toISOString(),
-          tur_vaqt: new Date().toISOString(),
-          davomiylik: elapsed,
-          sabab: 'Ilovadan chiqib ketdi (sahifa yopildi)',
-          vaqt: new Date().toISOString(),
-          ko_rildi: false
-        });
-        // Firebase REST API orqali sinxron yozish
-        const projectId = 'quduqlar-nazorati'; // Firebase project ID
-        navigator.sendBeacon(
-          `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/ogohlantirishlar`,
-          new Blob([payload], { type: 'application/json' })
-        );
-      } catch(e) {}
-    }
-  }
-});
-
-// ===== TOAST =====
-function showToast(msg, type) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + (type||'');
-  setTimeout(() => t.className = 'toast', 2500);
-}
-
-// ===== ADMIN: YOZUVNI O'CHIRISH =====
-async function deleteRecord(id) {
-  if (!confirm('Bu yozuvni o\'chirishni tasdiqlaysizmi?')) return;
-  try {
-    // Avval rasmlarni Storage dan o'chirish
-    const doc = await db.collection('tekshiruvlar').doc(id).get();
-    if (doc.exists) {
-      const rasmlar = doc.data().rasmlar || [];
-      await Promise.allSettled(rasmlar.map(url => {
-        try {
-          return storage.refFromURL(url).delete();
-        } catch(e) { return Promise.resolve(); }
-      }));
-    }
-    // Keyin Firestore yozuvini o'chirish
-    await db.collection('tekshiruvlar').doc(id).delete();
-    showToast('✅ Yozuv o\'chirildi!', 'success');
-    loadHistory();
-  } catch(e) { showToast('❌ Xatolik!', 'error'); }
-}
-
-// ===== KUN/TUN REJIMI =====
-let isDayMode = localStorage.getItem('isDayMode') === 'true';
-
-function toggleDayNight() {
-  isDayMode = !isDayMode;
-  localStorage.setItem('isDayMode', isDayMode);
-  applyDayNightMode();
-  showToast(isDayMode ? '☀️ Kunduzgi rejim' : '🌙 Tungi rejim', 'success');
-}
-
-function applyDayNightMode() {
-  const icon = document.getElementById('theme-toggle-icon');
-  const label = document.getElementById('theme-toggle-label');
-  if (isDayMode) {
-    applyTheme('#e8edf5','#f0f4fa','#f8fafc','#ffffff');
-    document.documentElement.style.setProperty('--text','#1e293b');
-    document.documentElement.style.setProperty('--text2','#64748b');
-    document.documentElement.style.setProperty('--border','#cbd5e1');
-    if (icon) icon.textContent = '🌙';
-    if (label) label.textContent = 'Tungi rejimga o\'tish';
-  } else {
-    document.documentElement.style.setProperty('--text','#e2e8f0');
-    document.documentElement.style.setProperty('--text2','#94a3b8');
-    document.documentElement.style.setProperty('--border','#1e2d4a');
-    if (icon) icon.textContent = '☀️';
-    if (label) label.textContent = 'Kunduzgi rejimga o\'tish';
-    // Saved theme yoki default
-    const saved = localStorage.getItem('theme');
-    if (saved) {
-      try { const t = JSON.parse(saved); applyTheme(t.bg, t.bg2, t.bg3, t.card); } catch(e) {}
-    } else {
-      applyTheme('#0a0f1e','#0f1628','#151d35','#111827');
-    }
-  }
-}
-
-// Saqlangan rejimni yuklash
-if (isDayMode) {
-  document.addEventListener('DOMContentLoaded', applyDayNightMode);
-}
-
-// ===== FON RANGI (TEMA) =====
+// ===== MAVZULAR (THEMES) =====
 function applyTheme(bg, bg2, bg3, card) {
-  document.documentElement.style.setProperty('--bg', bg);
-  document.documentElement.style.setProperty('--bg2', bg2);
-  document.documentElement.style.setProperty('--bg3', bg3);
-  document.documentElement.style.setProperty('--card', card);
-  localStorage.setItem('theme', JSON.stringify({bg,bg2,bg3,card}));
+  const root = document.documentElement;
+  root.style.setProperty('--bg', bg);
+  root.style.setProperty('--bg2', bg2);
+  root.style.setProperty('--bg3', bg3);
+  root.style.setProperty('--card', card);
+  localStorage.setItem('cyber_theme', JSON.stringify({bg, bg2, bg3, card}));
 }
 
-// Saqlangan temani yuklash
 (function() {
-  const saved = localStorage.getItem('theme');
-  if (saved) {
+  const saved = localStorage.getItem('cyber_theme');
+  if(saved) {
     try {
       const t = JSON.parse(saved);
       applyTheme(t.bg, t.bg2, t.bg3, t.card);
-      // Aktiv dot ni belgilash
       document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.theme-dot').forEach(d => {
           d.style.border = d.dataset.bg === t.bg ? '3px solid var(--accent)' : '3px solid transparent';
@@ -1985,25 +786,19 @@ document.addEventListener('click', e => {
   document.querySelectorAll('.theme-dot').forEach(d => {
     d.style.border = d === dot ? '3px solid var(--accent)' : '3px solid transparent';
   });
-  showToast('🎨 Fon rangi o\'zgartirildi!', 'success');
+  showToast('🎨 Mavzu o\'zgartirildi!', 'success');
 });
 
-// ===== PROFIL RASMI — kamera orqali ham olish imkoni =====
-// Mavjud file input accept="image/*" — mobil qurilmada kamera ham chiqadi, ishlaydi.
-
-// ===== QR KOD GENERATSIYA (Admin uchun) =====
-// Admin sozlamalar sahifasida QR kodlarni yuklab olishi mumkin
-// Har bir quduq uchun QR kodni konsolda chop etish:
-// QR kod matni: QUDUQ_1GS, QUDUQ_16 va hokazo
-// Masalan: https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=QUDUQ_1GS
-
-// ===== PWA Service Worker =====
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then(() => console.log('SW registered'))
-      .catch(() => console.log('SW error'));
-  });
+function uploadAvatar(input) {
+  const file = input.files[0];
+  if(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('user-avatar-img').src = e.target.result;
+      showToast('👤 Profil rasmi yangilandi!', 'success');
+    }
+    reader.readAsDataURL(file);
+  }
 }
 </script>
 </body>
