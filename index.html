@@ -171,6 +171,19 @@ textarea{resize:none;min-height:80px}
 .pump-rod{animation:rod-move 1.4s ease-in-out infinite}
 .crank{animation:crank-spin 1.4s linear infinite}
 .oil-drop{animation:oil-drip 1.4s ease-in infinite}
+
+/* ===== ACCORDION MAYDON ===== */
+.field-accordion{background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.field-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;cursor:pointer;user-select:none;transition:background .15s}
+.field-header:active{background:var(--bg2)}
+.field-title{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;color:var(--accent)}
+.field-meta{font-size:.72rem;color:var(--text2);margin-top:2px}
+.field-chevron{color:var(--text2);font-size:1rem;transition:transform .25s}
+.field-header.open .field-chevron{transform:rotate(90deg)}
+.field-body{display:none;padding:10px}
+.field-body.open{display:block}
+.field-body .wells-grid{margin-bottom:0}
+
 </style>
 </head>
 <body>
@@ -314,7 +327,7 @@ textarea{resize:none;min-height:80px}
   <div class="page active" id="page-home">
     <div class="page-title">Quduqlar holati</div>
     <div class="stats-row">
-      <div class="stat-card"><div class="stat-num" id="stat-total">10</div><div class="stat-label">Jami</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Jami</div></div>
       <div class="stat-card"><div class="stat-num" style="color:var(--green)" id="stat-soz">0</div><div class="stat-label">Soz</div></div>
       <div class="stat-card"><div class="stat-num" style="color:var(--red)" id="stat-nosoz">0</div><div class="stat-label">Nosoz</div></div>
     </div>
@@ -380,8 +393,16 @@ textarea{resize:none;min-height:80px}
 
   <!-- Quduqlar ro'yxati sahifasi -->
   <div class="page" id="page-wells">
-    <div class="page-title" style="display:flex;align-items:center;gap:8px"><svg style="width:28px;height:28px" viewBox="0 0 120 110" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="82" width="60" height="13" rx="2" fill="#334155" stroke="#475569" stroke-width="1"/><line x1="52" y1="82" x2="44" y2="38" stroke="#64748b" stroke-width="4" stroke-linecap="round"/><line x1="68" y1="82" x2="76" y2="38" stroke="#64748b" stroke-width="4" stroke-linecap="round"/><line x1="47" y1="62" x2="73" y2="62" stroke="#64748b" stroke-width="2.5" stroke-linecap="round"/><circle cx="60" cy="36" r="5" fill="#475569" stroke="#f59e0b" stroke-width="1.5"/><g class="beam"><rect x="8" y="32" width="86" height="8" rx="4" fill="#f59e0b"/><rect x="88" y="26" width="22" height="20" rx="4" fill="#475569" stroke="#64748b" stroke-width="1.5"/></g><g class="pump-rod"><line x1="13" y1="48" x2="13" y2="82" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/></g><g class="crank"><circle cx="82" cy="72" r="11" fill="#1e293b" stroke="#475569" stroke-width="2"/><line x1="82" y1="72" x2="82" y2="61" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/><circle cx="82" cy="61" r="3" fill="#f59e0b"/></g></svg> Quduqlar</div>
-    <div class="wells-grid" id="wells-grid-full"></div>
+    <div class="page-title">⛽ Quduqlar</div>
+    <!-- Qidiruv -->
+    <div style="position:relative;margin-bottom:14px">
+      <input id="well-search" type="text" placeholder="🔍 Quduq nomi bo'yicha qidirish..." style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:11px 16px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:.95rem;outline:none">
+      <button id="well-search-clear" onclick="document.getElementById('well-search').value='';renderWells()" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text2);font-size:1.1rem;cursor:pointer">✕</button>
+    </div>
+    <!-- Statistika -->
+    <div id="wells-stats-bar" style="display:flex;gap:8px;margin-bottom:14px;font-size:.78rem;color:var(--text2)"></div>
+    <!-- Accordion maydonlar -->
+    <div id="wells-accordion"></div>
   </div>
 
   <div id="well-detail">
@@ -471,16 +492,6 @@ textarea{resize:none;min-height:80px}
     <div class="page-title">Tarix</div>
     <div class="filter-row" id="filter-row">
       <button class="filter-btn active" data-f="all">Hammasi</button>
-      <button class="filter-btn" data-f="1GS">1GS</button>
-      <button class="filter-btn" data-f="16">16</button>
-      <button class="filter-btn" data-f="23">23</button>
-      <button class="filter-btn" data-f="28">28</button>
-      <button class="filter-btn" data-f="31">31</button>
-      <button class="filter-btn" data-f="32">32</button>
-      <button class="filter-btn" data-f="37">37</button>
-      <button class="filter-btn" data-f="40">40</button>
-      <button class="filter-btn" data-f="42">42</button>
-      <button class="filter-btn" data-f="43">43</button>
     </div>
     <div id="history-list"></div>
   </div>
@@ -490,7 +501,7 @@ textarea{resize:none;min-height:80px}
     <div class="section-card">
       <div class="section-title">Yangi avariya</div>
       <div class="form-group"><label>Quduq</label>
-        <select id="em-well"><option>1GS</option><option>16</option><option>23</option><option>28</option><option>31</option><option>32</option><option>37</option><option>40</option><option>42</option><option>43</option></select>
+        <select id="em-well"></select>
       </div>
       <div class="form-group"><label>Tavsif</label><textarea id="em-desc" placeholder="Avariya haqida yozing..."></textarea></div>
       <button class="btn-primary" id="em-send-btn" style="background:linear-gradient(135deg,var(--danger),#b91c1c)">🚨 YUBORISH</button>
@@ -651,8 +662,23 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
 
-const WELLS = ['1GS','16','23','28','31','32','37','40','42','43'];
-const MIN_SECONDS = 600; // 10 daqiqa
+// ===== QUDUQLAR TUZILMASI =====
+// Yangi maydon qo'shish: 'Maydon nomi': ['Q1','Q2']
+// Yangi quduq qo'shish: mavjud maydon massiviga nom qo'shing
+const WELLS_MAP = {
+  'Xonqiz': ['1GS','16','23','28','31','32','37','40','42','43'],
+  // 'Kashkakir': ['K-1','K-2','K-3'],
+  // 'Eski Chimyon': ['ECH-1','ECH-2'],
+  // 'Avval': ['AV-1','AV-2','AV-3'],
+  // 'Sharqiy Avval': ['SHA-1','SHA-2'],
+  // 'Markaziy Avval': ['MAV-1','MAV-2'],
+  // 'Vorux': ['V-1','V-2'],
+  // 'Shorsuw': ['SH-1','SH-2'],
+};
+// Barcha quduqlar tekis ro'yxat (ichki ishlatish uchun)
+const WELLS = Object.values(WELLS_MAP).flat();
+
+const MIN_SECONDS = 30; // TEST: 30 soniya (ishlatishda 600 qiling!)
 let currentUser = null;
 let userName = '';
 let currentWell = null;
@@ -967,25 +993,43 @@ function showPage(page) {
   document.querySelector('[data-page="'+page+'"]')?.classList.add('active');
   if (page === 'history') loadHistory();
   if (page === 'wells') renderWells();
+  if (page === 'wells') {
+    // Qidiruv listener (bir marta qo'shiladi)
+    const searchEl = document.getElementById('well-search');
+    const clearBtn = document.getElementById('well-search-clear');
+    if (searchEl && !searchEl.dataset.listenerAdded) {
+      searchEl.dataset.listenerAdded = '1';
+      searchEl.addEventListener('input', () => {
+        clearBtn.style.display = searchEl.value ? 'block' : 'none';
+        renderAccordion(searchEl.value);
+      });
+    }
+  }
   if (page === 'settings') {
     const isAdmin = currentUser && currentUser.email === 'omonovabbos233@gmail.com';
     if (isAdmin) {
       document.getElementById('admin-alerts-section').style.display = 'block';
       loadAdminAlerts();
-      // QR kodlarni ko'rsatish
+      // QR kodlarni maydon bo'yicha ko'rsatish (lazy load)
       const grid = document.getElementById('qr-codes-grid');
-      if (grid && !grid.innerHTML) {
-        grid.innerHTML = WELLS.map(w => {
-          const data = 'QUDUQ_' + w;
-          const url = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(data);
-          return `<a href="${url}" target="_blank" style="text-decoration:none">
-            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center">
-              <img src="${url}" style="width:100%;border-radius:6px" loading="lazy">
-              <div style="font-family:'Rajdhani',sans-serif;font-weight:700;margin-top:6px;color:var(--text)">${w} quduq</div>
-              <div style="font-size:.7rem;color:var(--text2)">Bosib yuklab oling</div>
-            </div>
-          </a>`;
-        }).join('');
+      if (grid && !grid.dataset.built) {
+        grid.dataset.built = '1';
+        let html = '';
+        for (const [fieldName, wells] of Object.entries(WELLS_MAP)) {
+          html += `<div style="grid-column:1/-1;font-family:'Rajdhani',sans-serif;font-weight:700;color:var(--text2);font-size:.85rem;text-transform:uppercase;letter-spacing:1px;margin-top:10px;margin-bottom:4px">⛽ ${fieldName}</div>`;
+          wells.forEach(w => {
+            const data = 'QUDUQ_' + w;
+            const url = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(data);
+            html += `<a href="${url}" target="_blank" style="text-decoration:none">
+              <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center">
+                <img src="${url}" style="width:100%;border-radius:6px" loading="lazy">
+                <div style="font-family:'Rajdhani',sans-serif;font-weight:700;margin-top:6px;color:var(--text);font-size:.9rem">${w}</div>
+                <div style="font-size:.7rem;color:var(--text2)">${fieldName}</div>
+              </div>
+            </a>`;
+          });
+        }
+        grid.innerHTML = html;
       }
     }
   }
@@ -1014,75 +1058,190 @@ async function loadAdminAlerts() {
 }
 
 // ===== WELLS =====
+// Quduq kartochkasi HTML yasash
+function makeWellCard(w, data) {
+  const { count, lastStatus, lastTime, totalDur } = data;
+  const card = document.createElement('div');
+  card.className = 'well-card' + (lastStatus === 'Soz' ? ' soz' : lastStatus ? ' nosoz' : '');
+  const mins = count > 0 ? Math.round(totalDur / 60) : 0;
+  const obxodLine = count > 0 ? `<div class="well-obxod">${count}x · ${mins} min</div>` : '';
+  card.innerHTML =
+    (count > 0 ? '<div class="well-count">' + count + '</div>' : '') +
+    '<div class="well-name">' + w + '</div>' +
+    '<div class="well-dot"></div>' +
+    '<div class="well-time">' + (lastTime ? fmtTime(lastTime) : '--:--') + '</div>' +
+    obxodLine;
+  card.addEventListener('click', () => showWellStats(w));
+  return card;
+}
+
+// Accordion render (qidiruv filtri bilan)
+function renderAccordion(searchTerm) {
+  const accordion = document.getElementById('wells-accordion');
+  if (!accordion) return;
+  const q = (searchTerm || '').toLowerCase().trim();
+  accordion.innerHTML = '';
+  let totalShown = 0;
+
+  for (const [fieldName, wells] of Object.entries(WELLS_MAP)) {
+    const filtered = q ? wells.filter(w => w.toLowerCase().includes(q)) : wells;
+    if (!filtered.length) continue;
+    totalShown += filtered.length;
+
+    const isOpen = !q ? (localStorage.getItem('accordion_' + fieldName) !== 'closed') : true;
+
+    const block = document.createElement('div');
+    block.className = 'field-accordion';
+
+    // Maydon statistikasi
+    const fieldSoz = filtered.filter(w => wellData[w]?.lastStatus === 'Soz').length;
+    const fieldNosoz = filtered.filter(w => wellData[w]?.lastStatus && wellData[w]?.lastStatus !== 'Soz').length;
+    const fieldObxod = filtered.filter(w => (wellData[w]?.count || 0) > 0).length;
+
+    const header = document.createElement('div');
+    header.className = 'field-header' + (isOpen ? ' open' : '');
+    header.innerHTML = `
+      <div>
+        <div class="field-title">⛽ ${fieldName}</div>
+        <div class="field-meta">${filtered.length} quduq · <span style="color:var(--green)">${fieldSoz} soz</span> · <span style="color:var(--red)">${fieldNosoz} nosoz</span> · <span style="color:var(--accent)">${fieldObxod} obxod</span></div>
+      </div>
+      <span class="field-chevron">›</span>`;
+    header.addEventListener('click', () => {
+      const body = block.querySelector('.field-body');
+      const chevron = header.querySelector('.field-chevron');
+      const opening = !body.classList.contains('open');
+      body.classList.toggle('open');
+      header.classList.toggle('open');
+      localStorage.setItem('accordion_' + fieldName, opening ? 'open' : 'closed');
+    });
+
+    const body = document.createElement('div');
+    body.className = 'field-body' + (isOpen ? ' open' : '');
+    const grid = document.createElement('div');
+    grid.className = 'wells-grid';
+    filtered.forEach(w => {
+      const data = wellData[w] || { count:0, lastStatus:null, lastTime:null, totalDur:0 };
+      grid.appendChild(makeWellCard(w, data));
+    });
+    body.appendChild(grid);
+
+    block.appendChild(header);
+    block.appendChild(body);
+    accordion.appendChild(block);
+  }
+
+  // Qidiruv natija yo'q
+  if (totalShown === 0 && q) {
+    accordion.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div>"' + q + '" bo\'yicha quduq topilmadi</div>';
+  }
+
+  // Stats bar
+  const statsBar = document.getElementById('wells-stats-bar');
+  if (statsBar) {
+    const totalQ = WELLS.length;
+    const shownText = q ? `${totalShown} / ${totalQ} quduq ko'rsatilmoqda` : `Jami ${totalQ} ta quduq`;
+    statsBar.textContent = shownText;
+  }
+}
+
 async function renderWells() {
   const today = new Date().toDateString();
   let soz = 0, nosoz = 0;
   const isAdmin = currentUser.email === 'omonovabbos233@gmail.com';
   let totalObxodCount = 0, totalObxodSec = 0;
 
-  let baseQ = db.collection('tekshiruvlar');
-  if (!isAdmin) baseQ = baseQ.where('operator_uid', '==', currentUser.uid);
+  // Firestore: ishonchli usul — operator bo'yicha filter, JS da sana tekshirish
+  let baseQ = db.collection('tekshiruvlar').orderBy('vaqt', 'desc').limit(500);
+  if (!isAdmin) baseQ = db.collection('tekshiruvlar')
+    .where('operator_uid', '==', currentUser.uid)
+    .orderBy('vaqt', 'desc').limit(500);
 
   let allSnap;
   try {
-    allSnap = await baseQ.orderBy('vaqt', 'desc').get();
-  } catch(e) { allSnap = { docs: [] }; }
+    allSnap = await baseQ.get();
+  } catch(e) {
+    console.error('Firestore renderWells xatolik:', e);
+    allSnap = { docs: [] };
+  }
 
-  const allTodayDocs = allSnap.docs.filter(d => d.data().vaqt?.toDate().toDateString() === today);
+  const allTodayDocs = allSnap.docs.filter(d => {
+    const t = d.data().vaqt?.toDate();
+    return t && t.toDateString() === today;
+  });
 
-  // Ikkala grid uchun ham element yasaymiz
-  const fullGrid = document.getElementById('wells-grid-full');
-  fullGrid.innerHTML = '';
-
+  // wellData ni to'ldirish
+  wellData = {};
   for (const w of WELLS) {
     const todayDocs = allTodayDocs.filter(d => d.data().quduq === w);
     const count = todayDocs.length;
     let lastStatus = null, lastTime = null, totalDur = 0;
-
     if (count > 0) {
+      todayDocs.sort((a,b) => (b.data().vaqt?.toDate()||0)-(a.data().vaqt?.toDate()||0));
       lastStatus = todayDocs[0].data().holat;
       lastTime = todayDocs[0].data().vaqt?.toDate();
       todayDocs.forEach(d => { totalDur += d.data().davomiylik || 0; });
     }
-
-    wellData[w] = { count, lastStatus, lastTime };
+    wellData[w] = { count, lastStatus, lastTime, totalDur };
     if (lastStatus === 'Soz') soz++;
     else if (lastStatus) nosoz++;
-
     totalObxodCount += count;
     totalObxodSec += totalDur;
-
-    const card = document.createElement('div');
-    card.className = 'well-card' + (lastStatus === 'Soz' ? ' soz' : lastStatus ? ' nosoz' : '');
-    const mins = count > 0 ? Math.round(totalDur / 60) : 0;
-    const obxodLine = count > 0 ? `<div class="well-obxod">${count}x · ${mins} min</div>` : '';
-    card.innerHTML =
-      (count > 0 ? '<div class="well-count">' + count + '</div>' : '') +
-      '<div class="well-name">' + w + '</div>' +
-      '<div class="well-dot"></div>' +
-      '<div class="well-time">' + (lastTime ? fmtTime(lastTime) : '--:--') + '</div>' +
-      obxodLine;
-    card.addEventListener('click', () => showWellStats(w));
-    fullGrid.appendChild(card);
   }
 
+  document.getElementById('stat-total').textContent = WELLS.length;
   document.getElementById('stat-soz').textContent = soz;
   document.getElementById('stat-nosoz').textContent = nosoz;
 
-  // Bosh sahifadagi quduqlar tugmasi subtitli
   const sub = document.getElementById('wells-btn-sub');
   if (sub) sub.textContent = WELLS.length + ' ta quduq · ' + soz + ' soz · ' + nosoz + ' nosoz';
 
-  // Umumiy obxod statistikasi
   const summaryEl = document.getElementById('today-obxod-summary');
   const timeEl = document.getElementById('today-obxod-time');
   if (totalObxodCount === 0) {
     summaryEl.textContent = 'Hali obxod yo\'q';
     timeEl.textContent = '0 min';
   } else {
-    const totalMins = Math.round(totalObxodSec / 60);
     summaryEl.textContent = totalObxodCount + ' marta obxod qilindi';
-    timeEl.textContent = totalMins + ' daqiqa';
+    timeEl.textContent = Math.round(totalObxodSec / 60) + ' daqiqa';
+  }
+
+  // Accordion render
+  const searchEl = document.getElementById('well-search');
+  renderAccordion(searchEl ? searchEl.value : '');
+
+  // Filter row va em-well ni dinamik to'ldirish
+  buildFilterRow();
+  buildEmWell();
+}
+
+// Tarix filter row ni dinamik yasash
+function buildFilterRow() {
+  const row = document.getElementById('filter-row');
+  if (!row || row.dataset.built === '1') return;
+  row.dataset.built = '1';
+  WELLS.forEach(w => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn';
+    btn.dataset.f = w;
+    btn.textContent = w;
+    row.appendChild(btn);
+  });
+}
+
+// Avariya quduq select ni dinamik yasash
+function buildEmWell() {
+  const sel = document.getElementById('em-well');
+  if (!sel || sel.dataset.built === '1') return;
+  sel.dataset.built = '1';
+  for (const [fieldName, wells] of Object.entries(WELLS_MAP)) {
+    const grp = document.createElement('optgroup');
+    grp.label = fieldName;
+    wells.forEach(w => {
+      const opt = document.createElement('option');
+      opt.value = w; opt.textContent = w;
+      grp.appendChild(opt);
+    });
+    sel.appendChild(grp);
   }
 }
 
