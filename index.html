@@ -1659,8 +1659,24 @@ async function uploadImage(base64, path) {
 
 document.getElementById('complete-btn').addEventListener('click', async () => {
   if (!currentWell) return;
-  if (!selectedStatus) { showToast('❗ Holat tanlang!', 'error'); return; }
   if (!enterScanned || !exitScanned) { showToast('❗ Ikkala QR ham skanerlanishi kerak!', 'error'); return; }
+  if (!selectedStatus) {
+    showToast('❗ Holat tanlang: Soz yoki Nosoz!', 'error');
+    // Status bo'limiga scroll qilish va diqqatni jalb qilish
+    const statusGrid = document.getElementById('status-grid');
+    if (statusGrid) {
+      statusGrid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      statusGrid.style.transition = 'all 0.15s';
+      let count = 0;
+      const flash = setInterval(() => {
+        statusGrid.style.outline = count % 2 === 0 ? '3px solid var(--red)' : 'none';
+        statusGrid.style.borderRadius = '8px';
+        count++;
+        if (count >= 6) { clearInterval(flash); statusGrid.style.outline = 'none'; }
+      }, 150);
+    }
+    return;
+  }
 
   const dur = Math.floor(((new Date()) - wellStartTime) / 1000);
   const incomplete = dur < MIN_SECONDS && currentUser.email !== 'omonovabbos233@gmail.com';
